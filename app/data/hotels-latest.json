@@ -1,0 +1,100 @@
+{
+  "source": "API Crew Care",
+  "generated_at": "2026-05-08T23:55:43.645Z",
+  "count": 3,
+  "reservations": [
+    {
+      "section": "Recent Reservations",
+      "airport": "CGH",
+      "date": "Thu 07 May 2026",
+      "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
+      "pairing_id": "F2607-CA19762070526100526151001251140/07",
+      "hotel": {
+        "name": "Ibis SP Congonhas",
+        "address": "R. Baronesa de Bela Vista, 801 - Vila Congonhas, SAO PAULO, SP BR",
+        "phone": "011-55-(11) 5097 3737/ 011-55-11-5097-37",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Expresso RS CGH",
+          "phone": "011-55-11-2935-3823",
+          "direction": "to_hotel",
+          "pickup_date": "Thu 07 May 2026",
+          "pickup_time": "21:54",
+          "transit_time": "15 minutes"
+        },
+        {
+          "company": "Expresso RS CGH",
+          "phone": "011-55-11-2935-3823",
+          "direction": "to_airport",
+          "pickup_date": "Fri 08 May 2026",
+          "pickup_time": "10:25",
+          "transit_time": "15 minutes"
+        }
+      ]
+    },
+    {
+      "section": "Recent Reservations",
+      "airport": "GIG",
+      "date": "Fri 08 May 2026",
+      "city": "Rio de Janeiro, RJ BR",
+      "pairing_id": "F2607-CA19762070526100526151001251140/07",
+      "hotel": {
+        "name": "Hotel Linx International Airport",
+        "address": "Av. Vinte de Janeiro S/N° Aeroporto Galeão, Rio de Janeiro, RJ BR",
+        "phone": "011 5521 2468-3400",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Seven Fly",
+          "phone": "011 55 21 98122-6618",
+          "direction": "to_hotel",
+          "pickup_date": "Fri 08 May 2026",
+          "pickup_time": "19:10",
+          "transit_time": "0 minutes"
+        },
+        {
+          "company": "Seven Fly",
+          "phone": "011 55 21 98122-6618",
+          "direction": "to_airport",
+          "pickup_date": "Sat 09 May 2026",
+          "pickup_time": "10:00",
+          "transit_time": "0 minutes"
+        }
+      ]
+    },
+    {
+      "section": "Upcoming Reservations",
+      "airport": "CWB",
+      "date": "Sat 09 May 2026",
+      "city": "3450 - Centro, São José dos Pinhai BR",
+      "pairing_id": "F2607-CA19762070526100526151001251140/07",
+      "hotel": {
+        "name": "Slaviero Essential Curitiba Aeroporto",
+        "address": "Av. das Torres, 3450 - Centro, São José dos Pinhai BR",
+        "phone": "011 55 41 2170-4077",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Hills Tour Transportes",
+          "phone": "011-41-9-9159-7069",
+          "direction": "to_hotel",
+          "pickup_date": "Sat 09 May 2026",
+          "pickup_time": "21:30",
+          "transit_time": "0 minutes"
+        },
+        {
+          "company": "Hills Tour Transportes",
+          "phone": "011-41-9-9159-7069",
+          "direction": "to_airport",
+          "pickup_date": "Sun 10 May 2026",
+          "pickup_time": "10:35",
+          "transit_time": "0 minutes"
+        }
+      ]
+    }
+  ]
+}

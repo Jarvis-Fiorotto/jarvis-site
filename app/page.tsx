@@ -1,4 +1,5 @@
 import roster from "./data/roster-latest.json";
+import hotels from "./data/hotels-latest.json";
 import { currentUser } from "../lib/auth";
 import { redirect } from "next/navigation";
 
@@ -31,8 +32,22 @@ type RosterData = {
   counts: { events: number; duties: number; pairings: number; activities: number };
   events: RosterEvent[];
 };
+type HotelReservation = {
+  section: string;
+  airport: string;
+  date: string;
+  city: string;
+  pairing_id: string;
+  hotel?: { name: string; address: string; phone: string; confirmation: string } | null;
+  transports: Array<{ company: string; phone: string; direction: string; pickup_date: string; pickup_time: string; transit_time: string }>;
+};
+
+type HotelData = { source: string; generated_at: string; count: number; reservations: HotelReservation[] };
+
 
 const data = roster as RosterData;
+const hotelData = hotels as HotelData;
+const hotelReservations = hotelData.reservations || [];
 const events = data.events.filter((event) => !event.canceled);
 const collator = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
 const longDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
@@ -150,6 +165,7 @@ export default async function Home() {
         </div>
         <nav className="navList" aria-label="Módulos">
           <a className="navItem active" href="#escala">Escala</a>
+          <a className="navItem" href="#hoteis">Hotéis</a>
           <a className="navItem disabled" aria-disabled="true">Agenda</a>
           <a className="navItem disabled" aria-disabled="true">Finanças</a>
           <a className="navItem disabled" aria-disabled="true">Viagens</a>
@@ -222,6 +238,32 @@ export default async function Home() {
                 <span>{shortAirport(upcoming)}</span>
               </>
             )}
+          </article>
+
+          <article id="hoteis" className="moduleCard hotelModule">
+            <div className="moduleHeader compact">
+              <div>
+                <p className="eyebrow">Hotéis</p>
+                <h2>Reservas</h2>
+              </div>
+              <span>{hotelReservations.length} item(ns)</span>
+            </div>
+            <div className="hotelList">
+              {hotelReservations.slice(0, 3).map((reservation) => (
+                <div className="hotelItem" key={`${reservation.airport}-${reservation.date}`}>
+                  <div className="hotelAirport">{reservation.airport}</div>
+                  <div>
+                    <strong>{reservation.hotel?.name || "Hotel não informado"}</strong>
+                    <span>{reservation.date} · {reservation.hotel?.address || reservation.city}</span>
+                    {reservation.transports.map((transport) => (
+                      <small key={`${transport.direction}-${transport.pickup_time}`}>
+                        {transport.direction === "to_hotel" ? "Hotel" : "Aeroporto"}: {transport.company} · {transport.pickup_time}
+                      </small>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </article>
 
           {statCards().map((stat) => (
