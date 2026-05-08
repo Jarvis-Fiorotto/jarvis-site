@@ -122,104 +122,160 @@ export default async function Home() {
   if (!user) redirect("/login");
 
   const grouped = groupByDay(events);
-  const days = Object.keys(grouped).sort();
+  const allDays = Object.keys(grouped).sort();
+  const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+  const firstTodayOrFuture = allDays.find((day) => day >= todayKey) || allDays[0];
+  const days = firstTodayOrFuture
+    ? [firstTodayOrFuture, ...allDays.filter((day) => day !== firstTodayOrFuture)]
+    : allDays;
+  const focusDay = firstTodayOrFuture || allDays[0];
+  const focusEvents = grouped[focusDay] || [];
+  const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const upcoming = getUpcoming();
-  const upcomingDay = grouped[upcoming?.date || days[0]] || [];
-  const upcomingSummary = daySummary(upcomingDay);
 
   return (
-    <main className="scheduleShell">
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">Escala Azul · Danilo Fiorotto</p>
-          <h1>Visão clara da escala</h1>
-          <p className="muted">
-            Período {new Date(data.period_start).toLocaleDateString("pt-BR")} a {new Date(data.period_end).toLocaleDateString("pt-BR")} · Atualizado em {new Date(data.generated_at).toLocaleString("pt-BR")}
-          </p>
+    <main className="appShell">
+      <aside className="sidebar">
+        <div className="sidebarBrand">
+          <div className="brandMark small">J</div>
+          <div>
+            <strong>JARVIS</strong>
+            <span>Operações pessoais</span>
+          </div>
         </div>
-        <form action="/api/logout" method="post">
-          <span className="userPill">{user.name}</span>
-          <button className="ghostButton" type="submit">Sair</button>
-        </form>
-      </header>
+        <nav className="navList" aria-label="Módulos">
+          <a className="navItem active" href="#escala">Escala</a>
+          <a className="navItem disabled" aria-disabled="true">Agenda</a>
+          <a className="navItem disabled" aria-disabled="true">Finanças</a>
+          <a className="navItem disabled" aria-disabled="true">Viagens</a>
+        </nav>
+        <div className="sidebarFooter">
+          <span>Logado como</span>
+          <strong>{user.name}</strong>
+          <form action="/api/logout" method="post">
+            <button className="ghostButton" type="submit">Sair</button>
+          </form>
+        </div>
+      </aside>
 
-      <section className="heroDashboard">
-        <article className="nextCard">
-          <p className="eyebrow">Próximo compromisso</p>
-          <h2>{upcoming ? `${upcoming.start_time} · ${upcoming.label}` : "Sem eventos"}</h2>
-          {upcoming && (
-            <>
-              <p className="routeLine">{longDate.format(parseDate(upcoming.date))} · {shortAirport(upcoming)}</p>
-              <div className="quickFacts">
-                <span>{kindLabel(upcoming)}</span>
-                {upcoming.position && <span>Posição {upcoming.position}</span>}
-                {upcoming.aircraft && <span>ACFT {upcoming.aircraft}</span>}
+      <section className="contentShell">
+        <header className="dashboardHeader">
+          <div>
+            <p className="eyebrow">Escala Azul · Danilo Fiorotto</p>
+            <h1>Painel pessoal</h1>
+            <p className="muted">
+              Escala de {new Date(data.period_start).toLocaleDateString("pt-BR")} a {new Date(data.period_end).toLocaleDateString("pt-BR")} · Atualizada em {new Date(data.generated_at).toLocaleString("pt-BR")}
+            </p>
+          </div>
+          <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
+        </header>
+
+        <section className="moduleGrid">
+          <article id="escala" className="moduleCard scheduleModule">
+            <div className="moduleHeader">
+              <div>
+                <p className="eyebrow">Escala</p>
+                <h2>{focusDay === todayKey ? "Hoje" : "Próximo dia com escala"}</h2>
               </div>
-            </>
-          )}
-        </article>
-        <article className="dayResume">
-          <p className="eyebrow">Resumo do dia</p>
-          <strong>{upcomingSummary.route}</strong>
-          <span>{upcomingSummary.flights.length} voo(s) · {upcomingSummary.hotels.length ? "com hotel" : "sem hotel"}</span>
-          <span>{upcomingSummary.first?.start_time} → {upcomingSummary.last?.end_time}</span>
-        </article>
-      </section>
+              <span>{focusDay ? longDate.format(parseDate(focusDay)) : "—"}</span>
+            </div>
 
-      <section className="statsGrid">
-        {statCards().map((stat) => (
-          <article className="statCard" key={stat.label}>
-            <span>{stat.label}</span>
-            <strong>{stat.value}</strong>
-            <small>{stat.hint}</small>
-          </article>
-        ))}
-      </section>
+            {focusSummary && (
+              <div className="todayPanel">
+                <div>
+                  <strong>{focusSummary.route}</strong>
+                  <span>{focusSummary.flights.length} voo(s) · {focusSummary.hotels.length ? "com hotel" : "sem hotel"}</span>
+                </div>
+                <div className="todayTimes">
+                  <span>Início</span><strong>{focusSummary.first?.start_time}</strong>
+                  <span>Fim</span><strong>{focusSummary.last?.end_time}</strong>
+                </div>
+              </div>
+            )}
 
-      <section className="timeline">
-        <div className="sectionTitle">
-          <p className="eyebrow">Linha do tempo</p>
-          <h2>Escala por dia</h2>
-        </div>
-        <div className="daysList">
-          {days.map((day) => {
-            const dayEvents = grouped[day];
-            const summary = daySummary(dayEvents);
-            return (
-              <article className="dayCard" key={day}>
-                <div className="dayHeader">
+            <div className="compactEvents">
+              {focusEvents.map((event) => (
+                <div className={`compactEvent ${eventKind(event)}`} key={event.id}>
+                  <time>{event.start_time}</time>
                   <div>
-                    <time>{collator.format(parseDate(day))}</time>
-                    <strong>{summary.route}</strong>
+                    <strong>{event.label}</strong>
+                    <span>{kindLabel(event)} · {shortAirport(event)}</span>
                   </div>
-                  <span>{summary.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                  <small>{event.position || event.aircraft || event.type}</small>
                 </div>
-                <div className="eventList">
-                  {dayEvents.map((event) => (
-                    <div className={`eventRow ${eventKind(event)}`} key={event.id}>
-                      <div className="timeBlock">
-                        <strong>{event.start_time}</strong>
-                        <span>{event.end_time}</span>
-                      </div>
-                      <div className="eventMain">
-                        <div>
-                          <strong>{event.label}</strong>
-                          <span>{kindLabel(event)} · {shortAirport(event)}</span>
-                        </div>
-                        <div className="eventMeta">
-                          {event.position && <span>{event.position}</span>}
-                          {event.aircraft && <span>{event.aircraft}</span>}
-                          {event.equipment && <span>E{event.equipment}</span>}
-                        </div>
-                        {event.type === "HOTEL" && event.details && <p className="details">{event.details}</p>}
-                      </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="moduleCard nextModule">
+            <p className="eyebrow">Próximo compromisso</p>
+            <h2>{upcoming ? upcoming.label : "Sem eventos"}</h2>
+            {upcoming && (
+              <>
+                <p>{longDate.format(parseDate(upcoming.date))}</p>
+                <strong>{upcoming.start_time} → {upcoming.end_time}</strong>
+                <span>{shortAirport(upcoming)}</span>
+              </>
+            )}
+          </article>
+
+          {statCards().map((stat) => (
+            <article className="moduleCard miniStat" key={stat.label}>
+              <span>{stat.label}</span>
+              <strong>{stat.value}</strong>
+              <small>{stat.hint}</small>
+            </article>
+          ))}
+        </section>
+
+        <section className="timeline compactTimeline">
+          <div className="sectionTitle">
+            <div>
+              <p className="eyebrow">Linha do tempo</p>
+              <h2>Próximos dias</h2>
+            </div>
+            <span className="muted">O dia atual/próximo aparece primeiro.</span>
+          </div>
+          <div className="daysList compactDays">
+            {days.map((day) => {
+              const dayEvents = grouped[day];
+              const summary = daySummary(dayEvents);
+              return (
+                <article className={`dayCard ${day === focusDay ? "focus" : ""}`} key={day}>
+                  <div className="dayHeader">
+                    <div>
+                      <time>{day === todayKey ? "Hoje" : collator.format(parseDate(day))}</time>
+                      <strong>{summary.route}</strong>
                     </div>
-                  ))}
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                    <span>{summary.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                  </div>
+                  <div className="eventList reduced">
+                    {dayEvents.slice(0, 5).map((event) => (
+                      <div className={`eventRow ${eventKind(event)}`} key={event.id}>
+                        <div className="timeBlock">
+                          <strong>{event.start_time}</strong>
+                          <span>{event.end_time}</span>
+                        </div>
+                        <div className="eventMain">
+                          <div>
+                            <strong>{event.label}</strong>
+                            <span>{kindLabel(event)} · {shortAirport(event)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {dayEvents.length > 5 && <div className="moreEvents">+ {dayEvents.length - 5} eventos no dia</div>}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
       </section>
     </main>
   );
