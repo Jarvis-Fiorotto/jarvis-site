@@ -1,33 +1,31 @@
-# JARVIS Site
+# Jarvis Site — Escala Danilo
 
-Site institucional do JARVIS — CEO Agent e copiloto cognitivo executivo do Danilo Fiorotto.
+Dashboard privado para visualizar a escala de voo do Danilo de forma clara para Danilo e Bruna.
 
 ## Stack
 
 - Next.js
 - React
 - TypeScript
-- Vercel-ready
+- Vercel
+- GitHub Actions
 
-## Desenvolvimento
+## Funcionalidades
 
-```bash
-npm install
-npm run dev
-```
+- Login básico por email e senha.
+- Sessão HTTP-only assinada.
+- Dashboard da escala importada do CAE/Azul.
+- Resumo do próximo compromisso, estatísticas e linha do tempo por dia.
 
-## Build
+## Dados
 
-```bash
-npm run build
-```
+A escala atual está embutida em `app/data/roster-latest.json`, gerada a partir de:
 
-## Deploy
+`projects/azul-escala/data/normalized/roster-latest.json`
 
-Conectar este repositório a um projeto Vercel. Deploy automático via branch `main`.
+## Segurança
 
-## Segurança operacional
-
-- Não commitar `.env` nem secrets.
-- Mudanças sensíveis devem passar por aprovação explícita.
-- Produção deve manter rollback fácil via histórico de deploys da Vercel.
+- Senhas não ficam no código.
+- Usuários e hashes ficam em `SCHEDULE_USERS_JSON`.
+- Assinatura de sessão usa `AUTH_SECRET`.
+- Secrets são configurados no Vercel/GitHub Actions.

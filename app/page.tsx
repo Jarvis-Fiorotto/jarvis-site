@@ -1,90 +1,225 @@
-const pillars = [
-  {
-    title: "Clareza operacional",
-    text: "Transforma informação dispersa em diagnóstico, prioridade e plano executável."
-  },
-  {
-    title: "Automação com controle",
-    text: "Executa o que é seguro, pede autorização no que afeta dinheiro, reputação, produção ou dados sensíveis."
-  },
-  {
-    title: "Coordenação de agentes",
-    text: "Orquestra subagentes especializados, revisa entregas e consolida decisões em uma voz única."
-  }
-];
+import roster from "./data/roster-latest.json";
+import { currentUser } from "../lib/auth";
+import { redirect } from "next/navigation";
 
-const workflows = [
-  "Projetos de software, IA e automações",
-  "Preparação internacional na aviação",
-  "Finanças pessoais, análises e organização",
-  "Documentos, SOPs, checklists e roadmaps"
-];
+type RosterEvent = {
+  id: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  start_local: string;
+  end_local: string;
+  type: string;
+  subtype?: string;
+  label: string;
+  from?: string | null;
+  to?: string | null;
+  flight_number?: string | null;
+  aircraft?: string | null;
+  equipment?: string | null;
+  position?: string | null;
+  pairing_label?: string | null;
+  details?: string | null;
+  canceled?: boolean;
+};
 
-export default function Home() {
+type RosterData = {
+  source: string;
+  generated_at: string;
+  period_start: string;
+  period_end: string;
+  counts: { events: number; duties: number; pairings: number; activities: number };
+  events: RosterEvent[];
+};
+
+const data = roster as RosterData;
+const events = data.events.filter((event) => !event.canceled);
+const collator = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
+const longDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+
+function eventKind(event: RosterEvent) {
+  if (event.type === "FLY") return "flight";
+  if (event.type === "HOTEL") return "hotel";
+  if (event.type === "CHECK") return event.subtype === "IN" ? "checkin" : "checkout";
+  if (["OFF", "REST", "DAY_OFF"].includes(event.type)) return "off";
+  return "other";
+}
+
+function kindLabel(event: RosterEvent) {
+  const kind = eventKind(event);
+  const labels: Record<string, string> = {
+    flight: "Voo",
+    hotel: "Hotel",
+    checkin: "Apresentação",
+    checkout: "Release",
+    off: "Folga",
+    other: event.type
+  };
+  return labels[kind];
+}
+
+function parseDate(date: string) {
+  return new Date(`${date}T12:00:00-03:00`);
+}
+
+function shortAirport(event: RosterEvent) {
+  if (!event.from && !event.to) return "—";
+  if (event.from === event.to) return event.from;
+  return `${event.from || "—"} → ${event.to || "—"}`;
+}
+
+function groupByDay(items: RosterEvent[]) {
+  return items.reduce<Record<string, RosterEvent[]>>((acc, event) => {
+    acc[event.date] ||= [];
+    acc[event.date].push(event);
+    return acc;
+  }, {});
+}
+
+function durationMinutes(event: RosterEvent) {
+  const start = new Date(event.start_local).getTime();
+  const end = new Date(event.end_local).getTime();
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
+  return Math.round((end - start) / 60000);
+}
+
+function formatDuration(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (!h) return `${m}min`;
+  return `${h}h${String(m).padStart(2, "0")}`;
+}
+
+function daySummary(dayEvents: RosterEvent[]) {
+  const flights = dayEvents.filter((event) => event.type === "FLY");
+  const hotels = dayEvents.filter((event) => event.type === "HOTEL");
+  const first = dayEvents[0];
+  const last = dayEvents[dayEvents.length - 1];
+  const route = flights.length ? [flights[0].from, ...flights.map((flight) => flight.to)].filter(Boolean).join(" → ") : shortAirport(first);
+  return { flights, hotels, first, last, route };
+}
+
+function getUpcoming() {
+  const now = new Date();
+  return events.find((event) => new Date(event.end_local) >= now) || events[0];
+}
+
+function statCards() {
+  const flightEvents = events.filter((event) => event.type === "FLY");
+  const hotelEvents = events.filter((event) => event.type === "HOTEL");
+  const airports = new Set(flightEvents.flatMap((event) => [event.from, event.to].filter(Boolean)));
+  const blockMinutes = flightEvents.reduce((sum, event) => sum + durationMinutes(event), 0);
+  return [
+    { label: "Voos", value: String(flightEvents.length), hint: "trechos programados" },
+    { label: "Pernoites", value: String(hotelEvents.length), hint: "hotéis na escala" },
+    { label: "Aeroportos", value: String(airports.size), hint: "origens/destinos" },
+    { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: "estimado pela escala" }
+  ];
+}
+
+export default async function Home() {
+  const user = await currentUser();
+  if (!user) redirect("/login");
+
+  const grouped = groupByDay(events);
+  const days = Object.keys(grouped).sort();
+  const upcoming = getUpcoming();
+  const upcomingDay = grouped[upcoming?.date || days[0]] || [];
+  const upcomingSummary = daySummary(upcomingDay);
+
   return (
-    <main>
-      <section className="hero">
-        <div className="hud">JARVIS / CEO AGENT</div>
-        <div className="heroGrid">
-          <div>
-            <p className="eyebrow">Just A Rather Very Intelligent System</p>
-            <h1>Copiloto cognitivo para transformar caos em clareza acionável.</h1>
-            <p className="lead">
-              JARVIS é a camada executiva de IA do Danilo Fiorotto: organiza contexto,
-              antecipa riscos, coordena execução e mantém o operador no controle.
-            </p>
-            <div className="actions">
-              <a href="#operacao">Ver operação</a>
-              <a className="secondary" href="#seguranca">Modelo de segurança</a>
-            </div>
-          </div>
-          <div className="panel" aria-label="Resumo operacional">
-            <div className="panelHeader">
-              <span>STATUS</span>
-              <strong>ONLINE</strong>
-            </div>
-            <ul>
-              <li><span>Função</span><strong>CEO Agent</strong></li>
-              <li><span>Modo</span><strong>Autonomia progressiva</strong></li>
-              <li><span>Prioridade</span><strong>Clareza, segurança, execução</strong></li>
-              <li><span>Stack</span><strong>Next.js · GitHub · Vercel</strong></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="operacao" className="section">
-        <p className="eyebrow">Operação</p>
-        <h2>Uma interface central para decisões, projetos e execução.</h2>
-        <div className="cards">
-          {pillars.map((pillar) => (
-            <article className="card" key={pillar.title}>
-              <h3>{pillar.title}</h3>
-              <p>{pillar.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section split">
+    <main className="scheduleShell">
+      <header className="topbar">
         <div>
-          <p className="eyebrow">Escopo</p>
-          <h2>Feito para operar em múltiplas frentes sem perder rastreabilidade.</h2>
+          <p className="eyebrow">Escala Azul · Danilo Fiorotto</p>
+          <h1>Visão clara da escala</h1>
+          <p className="muted">
+            Período {new Date(data.period_start).toLocaleDateString("pt-BR")} a {new Date(data.period_end).toLocaleDateString("pt-BR")} · Atualizado em {new Date(data.generated_at).toLocaleString("pt-BR")}
+          </p>
         </div>
-        <div className="list">
-          {workflows.map((item) => (
-            <div className="listItem" key={item}>{item}</div>
-          ))}
-        </div>
+        <form action="/api/logout" method="post">
+          <span className="userPill">{user.name}</span>
+          <button className="ghostButton" type="submit">Sair</button>
+        </form>
+      </header>
+
+      <section className="heroDashboard">
+        <article className="nextCard">
+          <p className="eyebrow">Próximo compromisso</p>
+          <h2>{upcoming ? `${upcoming.start_time} · ${upcoming.label}` : "Sem eventos"}</h2>
+          {upcoming && (
+            <>
+              <p className="routeLine">{longDate.format(parseDate(upcoming.date))} · {shortAirport(upcoming)}</p>
+              <div className="quickFacts">
+                <span>{kindLabel(upcoming)}</span>
+                {upcoming.position && <span>Posição {upcoming.position}</span>}
+                {upcoming.aircraft && <span>ACFT {upcoming.aircraft}</span>}
+              </div>
+            </>
+          )}
+        </article>
+        <article className="dayResume">
+          <p className="eyebrow">Resumo do dia</p>
+          <strong>{upcomingSummary.route}</strong>
+          <span>{upcomingSummary.flights.length} voo(s) · {upcomingSummary.hotels.length ? "com hotel" : "sem hotel"}</span>
+          <span>{upcomingSummary.first?.start_time} → {upcomingSummary.last?.end_time}</span>
+        </article>
       </section>
 
-      <section id="seguranca" className="section command">
-        <p className="eyebrow">Segurança</p>
-        <h2>Autonomia não é cheque em branco.</h2>
-        <p>
-          O sistema executa tarefas reversíveis e documentadas. Ações sensíveis — produção,
-          DNS, secrets, compras, envios externos e alterações destrutivas — exigem aprovação explícita.
-        </p>
+      <section className="statsGrid">
+        {statCards().map((stat) => (
+          <article className="statCard" key={stat.label}>
+            <span>{stat.label}</span>
+            <strong>{stat.value}</strong>
+            <small>{stat.hint}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="timeline">
+        <div className="sectionTitle">
+          <p className="eyebrow">Linha do tempo</p>
+          <h2>Escala por dia</h2>
+        </div>
+        <div className="daysList">
+          {days.map((day) => {
+            const dayEvents = grouped[day];
+            const summary = daySummary(dayEvents);
+            return (
+              <article className="dayCard" key={day}>
+                <div className="dayHeader">
+                  <div>
+                    <time>{collator.format(parseDate(day))}</time>
+                    <strong>{summary.route}</strong>
+                  </div>
+                  <span>{summary.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                </div>
+                <div className="eventList">
+                  {dayEvents.map((event) => (
+                    <div className={`eventRow ${eventKind(event)}`} key={event.id}>
+                      <div className="timeBlock">
+                        <strong>{event.start_time}</strong>
+                        <span>{event.end_time}</span>
+                      </div>
+                      <div className="eventMain">
+                        <div>
+                          <strong>{event.label}</strong>
+                          <span>{kindLabel(event)} · {shortAirport(event)}</span>
+                        </div>
+                        <div className="eventMeta">
+                          {event.position && <span>{event.position}</span>}
+                          {event.aircraft && <span>{event.aircraft}</span>}
+                          {event.equipment && <span>E{event.equipment}</span>}
+                        </div>
+                        {event.type === "HOTEL" && event.details && <p className="details">{event.details}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </section>
     </main>
   );
