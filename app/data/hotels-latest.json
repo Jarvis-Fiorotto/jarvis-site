@@ -1,12 +1,164 @@
 {
   "source": "API Crew Care",
-  "generated_at": "2026-05-08T23:55:43.645Z",
-  "count": 3,
+  "generated_at": "2026-05-09T00:02:43.106Z",
+  "files": [
+    "data/raw/mytravel-ranges/2026-04-26_2026-04-30.html",
+    "data/raw/mytravel-ranges/2026-05-01_2026-05-05.html",
+    "data/raw/mytravel-ranges/2026-05-06_2026-05-10.html",
+    "data/raw/mytravel-ranges/2026-05-11_2026-05-15.html",
+    "data/raw/mytravel-ranges/2026-05-16_2026-05-20.html",
+    "data/raw/mytravel-ranges/2026-05-21_2026-05-25.html",
+    "data/raw/mytravel-ranges/2026-05-26_2026-05-30.html",
+    "data/raw/mytravel-ranges/2026-05-31_2026-05-31.html"
+  ],
+  "count": 11,
   "reservations": [
     {
+      "source_file": "2026-04-26_2026-04-30.html",
+      "section": "Recent Reservations",
+      "airport": "GIG",
+      "date": "Mon 27 April 2026",
+      "date_iso": "2026-04-27",
+      "city": "Botafogo, RJ 22250-210 BR",
+      "pairing_id": "F4216-CA19762260426010526171015451685/26",
+      "hotel": {
+        "name": "Ibis Budget RJ Praia de Botafogo",
+        "address": "Praca Joia Valansi 24, Botafogo, RJ 22250-210 BR",
+        "phone": "011-55-2121566999",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Seven Fly",
+          "phone": "011 55 21 98122-6618",
+          "direction": "to_hotel",
+          "pickup_date": "Mon 27 April 2026",
+          "pickup_date_iso": "2026-04-27",
+          "pickup_time": "01:27",
+          "transit_time": "20 minutes"
+        },
+        {
+          "company": "Seven Fly",
+          "phone": "011 55 21 98122-6618",
+          "direction": "to_airport",
+          "pickup_date": "Tue 28 April 2026",
+          "pickup_date_iso": "2026-04-28",
+          "pickup_time": "04:10",
+          "transit_time": "20 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-04-26_2026-04-30.html",
+      "section": "Recent Reservations",
+      "airport": "POA",
+      "date": "Tue 28 April 2026",
+      "date_iso": "2026-04-28",
+      "city": "712 - Floresta, Porto Alegre , Porto Alegre BR",
+      "pairing_id": "F4216-CA19762260426010526171015451685/26",
+      "hotel": {
+        "name": "Master Cosmopolitan",
+        "address": "R. Félix da Cunha, 712 - Floresta, Porto Alegre , Porto Alegre BR",
+        "phone": "011-55-51 32698600",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Provincia Turismo",
+          "phone": "011-55-51-3029 9933",
+          "direction": "to_hotel",
+          "pickup_date": "Tue 28 April 2026",
+          "pickup_date_iso": "2026-04-28",
+          "pickup_time": "13:25",
+          "transit_time": "15 minutes"
+        },
+        {
+          "company": "Provincia Turismo",
+          "phone": "011-55-51-3029 9933",
+          "direction": "to_airport",
+          "pickup_date": "Wed 29 April 2026",
+          "pickup_date_iso": "2026-04-29",
+          "pickup_time": "05:50",
+          "transit_time": "15 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-04-26_2026-04-30.html",
+      "section": "Recent Reservations",
+      "airport": "CWB",
+      "date": "Wed 29 April 2026",
+      "date_iso": "2026-04-29",
+      "city": "3450 - Centro, São José dos Pinhai BR",
+      "pairing_id": "F4216-CA19762260426010526171015451685/26",
+      "hotel": {
+        "name": "Slaviero Essential Curitiba Aeroporto",
+        "address": "Av. das Torres, 3450 - Centro, São José dos Pinhai BR",
+        "phone": "011 55 41 2170-4077",
+        "confirmation": "RELOCATION TRANSIT TIME"
+      },
+      "transports": [
+        {
+          "company": "Hills Tour Transportes",
+          "phone": "011-41-9-9159-7069",
+          "direction": "to_hotel",
+          "pickup_date": "Wed 29 April 2026",
+          "pickup_date_iso": "2026-04-29",
+          "pickup_time": "15:45",
+          "transit_time": "0 minutes"
+        },
+        {
+          "company": "Hills Tour Transportes",
+          "phone": "011-41-9-9159-7069",
+          "direction": "to_airport",
+          "pickup_date": "Thu 30 April 2026",
+          "pickup_date_iso": "2026-04-30",
+          "pickup_time": "04:20",
+          "transit_time": "5 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-05-01_2026-05-05.html",
+      "section": "Recent Reservations",
+      "airport": "BSB",
+      "date": "Thu 30 April 2026",
+      "date_iso": "2026-04-30",
+      "city": "Lote 2, s/n Lago Sul, Brasilia, DF 71680900 BR",
+      "pairing_id": "F4216-CA19762260426010526171015451685/26",
+      "hotel": {
+        "name": "Ibis Styles Brasilia Aeroporto",
+        "address": "Aeroporto Internacional de Brasília Setor de Concessionárias, Lote 2, s/n Lago Sul, Brasilia, DF 71680900 BR",
+        "phone": "+55-61-2196-6600",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Guinho Locacao",
+          "phone": "011-55-61-3552-1055",
+          "direction": "to_hotel",
+          "pickup_date": "Thu 30 April 2026",
+          "pickup_date_iso": "2026-04-30",
+          "pickup_time": "10:15",
+          "transit_time": "0 minutes"
+        },
+        {
+          "company": "Guinho Locacao",
+          "phone": "011-55-61-3552-1055",
+          "direction": "to_airport",
+          "pickup_date": "Fri 01 May 2026",
+          "pickup_date_iso": "2026-05-01",
+          "pickup_time": "04:25",
+          "transit_time": "0 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-05-06_2026-05-10.html",
       "section": "Recent Reservations",
       "airport": "CGH",
       "date": "Thu 07 May 2026",
+      "date_iso": "2026-05-07",
       "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
       "pairing_id": "F2607-CA19762070526100526151001251140/07",
       "hotel": {
@@ -21,6 +173,7 @@
           "phone": "011-55-11-2935-3823",
           "direction": "to_hotel",
           "pickup_date": "Thu 07 May 2026",
+          "pickup_date_iso": "2026-05-07",
           "pickup_time": "21:54",
           "transit_time": "15 minutes"
         },
@@ -29,15 +182,18 @@
           "phone": "011-55-11-2935-3823",
           "direction": "to_airport",
           "pickup_date": "Fri 08 May 2026",
+          "pickup_date_iso": "2026-05-08",
           "pickup_time": "10:25",
           "transit_time": "15 minutes"
         }
       ]
     },
     {
+      "source_file": "2026-05-06_2026-05-10.html",
       "section": "Recent Reservations",
       "airport": "GIG",
       "date": "Fri 08 May 2026",
+      "date_iso": "2026-05-08",
       "city": "Rio de Janeiro, RJ BR",
       "pairing_id": "F2607-CA19762070526100526151001251140/07",
       "hotel": {
@@ -52,6 +208,7 @@
           "phone": "011 55 21 98122-6618",
           "direction": "to_hotel",
           "pickup_date": "Fri 08 May 2026",
+          "pickup_date_iso": "2026-05-08",
           "pickup_time": "19:10",
           "transit_time": "0 minutes"
         },
@@ -60,15 +217,18 @@
           "phone": "011 55 21 98122-6618",
           "direction": "to_airport",
           "pickup_date": "Sat 09 May 2026",
+          "pickup_date_iso": "2026-05-09",
           "pickup_time": "10:00",
           "transit_time": "0 minutes"
         }
       ]
     },
     {
+      "source_file": "2026-05-06_2026-05-10.html",
       "section": "Upcoming Reservations",
       "airport": "CWB",
       "date": "Sat 09 May 2026",
+      "date_iso": "2026-05-09",
       "city": "3450 - Centro, São José dos Pinhai BR",
       "pairing_id": "F2607-CA19762070526100526151001251140/07",
       "hotel": {
@@ -83,6 +243,7 @@
           "phone": "011-41-9-9159-7069",
           "direction": "to_hotel",
           "pickup_date": "Sat 09 May 2026",
+          "pickup_date_iso": "2026-05-09",
           "pickup_time": "21:30",
           "transit_time": "0 minutes"
         },
@@ -91,10 +252,964 @@
           "phone": "011-41-9-9159-7069",
           "direction": "to_airport",
           "pickup_date": "Sun 10 May 2026",
+          "pickup_date_iso": "2026-05-10",
           "pickup_time": "10:35",
           "transit_time": "0 minutes"
         }
       ]
+    },
+    {
+      "source_file": "2026-05-21_2026-05-25.html",
+      "section": "Upcoming Reservations",
+      "airport": "GIG",
+      "date": "Thu 21 May 2026",
+      "date_iso": "2026-05-21",
+      "city": "Rio de Janeiro, RJ BR",
+      "pairing_id": "F4910-CA1722221052622052609051530425/21",
+      "hotel": {
+        "name": "Hotel Linx International Airport",
+        "address": "Av. Vinte de Janeiro S/N° Aeroporto Galeão, Rio de Janeiro, RJ BR",
+        "phone": "011 5521 2468-3400",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Seven Fly",
+          "phone": "011 55 21 98122-6618",
+          "direction": "to_hotel",
+          "pickup_date": "Thu 21 May 2026",
+          "pickup_date_iso": "2026-05-21",
+          "pickup_time": "13:10",
+          "transit_time": "0 minutes"
+        },
+        {
+          "company": "Seven Fly",
+          "phone": "011 55 21 98122-6618",
+          "direction": "to_airport",
+          "pickup_date": "Fri 22 May 2026",
+          "pickup_date_iso": "2026-05-22",
+          "pickup_time": "04:45",
+          "transit_time": "0 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-05-26_2026-05-30.html",
+      "section": "Upcoming Reservations",
+      "airport": "CNF",
+      "date": "Tue 26 May 2026",
+      "date_iso": "2026-05-26",
+      "city": "735 - Joana Darc, Santa Lagoa, MG 33400-000 BR",
+      "pairing_id": "F2998-CA19762260526300526092502301525/26",
+      "hotel": {
+        "name": "eSuites SPA Lagoa Santa",
+        "address": "R. dos Operários, 735 - Joana Darc, Santa Lagoa, MG 33400-000 BR",
+        "phone": "01155(31) 3688-1250/1251/1257/1254",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "T8T Servicos Auxiliares De Transportes Aereos Ltda",
+          "phone": "",
+          "direction": "to_hotel",
+          "pickup_date": "Tue 26 May 2026",
+          "pickup_date_iso": "2026-05-26",
+          "pickup_time": "13:40",
+          "transit_time": "25 minutes"
+        },
+        {
+          "company": "T8T Servicos Auxiliares De Transportes Aereos Ltda",
+          "phone": "",
+          "direction": "to_airport",
+          "pickup_date": "Wed 27 May 2026",
+          "pickup_date_iso": "2026-05-27",
+          "pickup_time": "08:50",
+          "transit_time": "25 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-05-26_2026-05-30.html",
+      "section": "Upcoming Reservations",
+      "airport": "REC",
+      "date": "Wed 27 May 2026",
+      "date_iso": "2026-05-27",
+      "city": "PE BR",
+      "pairing_id": "F2998-CA19762260526300526092502301525/26",
+      "hotel": {
+        "name": "Mar Hotel Conventions",
+        "address": "RUA BARAO DE SOUZA LEAO 451, PE BR",
+        "phone": "+55 (81) 3302-4446",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Pontual Receptivo Excursoes",
+          "phone": "011 5581 2125 4000",
+          "direction": "to_hotel",
+          "pickup_date": "Wed 27 May 2026",
+          "pickup_date_iso": "2026-05-27",
+          "pickup_time": "19:50",
+          "transit_time": "5 minutes"
+        },
+        {
+          "company": "Pontual Receptivo Excursoes",
+          "phone": "011 5581 2125 4000",
+          "direction": "to_airport",
+          "pickup_date": "Thu 28 May 2026",
+          "pickup_date_iso": "2026-05-28",
+          "pickup_time": "12:30",
+          "transit_time": "5 minutes"
+        }
+      ]
+    },
+    {
+      "source_file": "2026-05-26_2026-05-30.html",
+      "section": "Upcoming Reservations",
+      "airport": "CGH",
+      "date": "Thu 28 May 2026",
+      "date_iso": "2026-05-28",
+      "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
+      "pairing_id": "F2998-CA19762260526300526092502301525/26",
+      "hotel": {
+        "name": "Ibis SP Congonhas",
+        "address": "R. Baronesa de Bela Vista, 801 - Vila Congonhas, SAO PAULO, SP BR",
+        "phone": "011-55-(11) 5097 3737/ 011-55-11-5097-37",
+        "confirmation": "PLANNED"
+      },
+      "transports": [
+        {
+          "company": "Expresso RS CGH",
+          "phone": "011-55-11-2935-3823",
+          "direction": "to_hotel",
+          "pickup_date": "Thu 28 May 2026",
+          "pickup_date_iso": "2026-05-28",
+          "pickup_time": "21:20",
+          "transit_time": "15 minutes"
+        },
+        {
+          "company": "Expresso RS CGH",
+          "phone": "011-55-11-2935-3823",
+          "direction": "to_airport",
+          "pickup_date": "Fri 29 May 2026",
+          "pickup_date_iso": "2026-05-29",
+          "pickup_time": "11:40",
+          "transit_time": "15 minutes"
+        }
+      ]
     }
-  ]
+  ],
+  "by_date": {
+    "2026-04-27": [
+      {
+        "source_file": "2026-04-26_2026-04-30.html",
+        "section": "Recent Reservations",
+        "airport": "GIG",
+        "date": "Mon 27 April 2026",
+        "date_iso": "2026-04-27",
+        "city": "Botafogo, RJ 22250-210 BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Ibis Budget RJ Praia de Botafogo",
+          "address": "Praca Joia Valansi 24, Botafogo, RJ 22250-210 BR",
+          "phone": "011-55-2121566999",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_hotel",
+            "pickup_date": "Mon 27 April 2026",
+            "pickup_date_iso": "2026-04-27",
+            "pickup_time": "01:27",
+            "transit_time": "20 minutes"
+          },
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_airport",
+            "pickup_date": "Tue 28 April 2026",
+            "pickup_date_iso": "2026-04-28",
+            "pickup_time": "04:10",
+            "transit_time": "20 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-04-28": [
+      {
+        "source_file": "2026-04-26_2026-04-30.html",
+        "section": "Recent Reservations",
+        "airport": "GIG",
+        "date": "Mon 27 April 2026",
+        "date_iso": "2026-04-27",
+        "city": "Botafogo, RJ 22250-210 BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Ibis Budget RJ Praia de Botafogo",
+          "address": "Praca Joia Valansi 24, Botafogo, RJ 22250-210 BR",
+          "phone": "011-55-2121566999",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_hotel",
+            "pickup_date": "Mon 27 April 2026",
+            "pickup_date_iso": "2026-04-27",
+            "pickup_time": "01:27",
+            "transit_time": "20 minutes"
+          },
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_airport",
+            "pickup_date": "Tue 28 April 2026",
+            "pickup_date_iso": "2026-04-28",
+            "pickup_time": "04:10",
+            "transit_time": "20 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-04-26_2026-04-30.html",
+        "section": "Recent Reservations",
+        "airport": "POA",
+        "date": "Tue 28 April 2026",
+        "date_iso": "2026-04-28",
+        "city": "712 - Floresta, Porto Alegre , Porto Alegre BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Master Cosmopolitan",
+          "address": "R. Félix da Cunha, 712 - Floresta, Porto Alegre , Porto Alegre BR",
+          "phone": "011-55-51 32698600",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Provincia Turismo",
+            "phone": "011-55-51-3029 9933",
+            "direction": "to_hotel",
+            "pickup_date": "Tue 28 April 2026",
+            "pickup_date_iso": "2026-04-28",
+            "pickup_time": "13:25",
+            "transit_time": "15 minutes"
+          },
+          {
+            "company": "Provincia Turismo",
+            "phone": "011-55-51-3029 9933",
+            "direction": "to_airport",
+            "pickup_date": "Wed 29 April 2026",
+            "pickup_date_iso": "2026-04-29",
+            "pickup_time": "05:50",
+            "transit_time": "15 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-04-29": [
+      {
+        "source_file": "2026-04-26_2026-04-30.html",
+        "section": "Recent Reservations",
+        "airport": "POA",
+        "date": "Tue 28 April 2026",
+        "date_iso": "2026-04-28",
+        "city": "712 - Floresta, Porto Alegre , Porto Alegre BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Master Cosmopolitan",
+          "address": "R. Félix da Cunha, 712 - Floresta, Porto Alegre , Porto Alegre BR",
+          "phone": "011-55-51 32698600",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Provincia Turismo",
+            "phone": "011-55-51-3029 9933",
+            "direction": "to_hotel",
+            "pickup_date": "Tue 28 April 2026",
+            "pickup_date_iso": "2026-04-28",
+            "pickup_time": "13:25",
+            "transit_time": "15 minutes"
+          },
+          {
+            "company": "Provincia Turismo",
+            "phone": "011-55-51-3029 9933",
+            "direction": "to_airport",
+            "pickup_date": "Wed 29 April 2026",
+            "pickup_date_iso": "2026-04-29",
+            "pickup_time": "05:50",
+            "transit_time": "15 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-04-26_2026-04-30.html",
+        "section": "Recent Reservations",
+        "airport": "CWB",
+        "date": "Wed 29 April 2026",
+        "date_iso": "2026-04-29",
+        "city": "3450 - Centro, São José dos Pinhai BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Slaviero Essential Curitiba Aeroporto",
+          "address": "Av. das Torres, 3450 - Centro, São José dos Pinhai BR",
+          "phone": "011 55 41 2170-4077",
+          "confirmation": "RELOCATION TRANSIT TIME"
+        },
+        "transports": [
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_hotel",
+            "pickup_date": "Wed 29 April 2026",
+            "pickup_date_iso": "2026-04-29",
+            "pickup_time": "15:45",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_airport",
+            "pickup_date": "Thu 30 April 2026",
+            "pickup_date_iso": "2026-04-30",
+            "pickup_time": "04:20",
+            "transit_time": "5 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-04-30": [
+      {
+        "source_file": "2026-04-26_2026-04-30.html",
+        "section": "Recent Reservations",
+        "airport": "CWB",
+        "date": "Wed 29 April 2026",
+        "date_iso": "2026-04-29",
+        "city": "3450 - Centro, São José dos Pinhai BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Slaviero Essential Curitiba Aeroporto",
+          "address": "Av. das Torres, 3450 - Centro, São José dos Pinhai BR",
+          "phone": "011 55 41 2170-4077",
+          "confirmation": "RELOCATION TRANSIT TIME"
+        },
+        "transports": [
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_hotel",
+            "pickup_date": "Wed 29 April 2026",
+            "pickup_date_iso": "2026-04-29",
+            "pickup_time": "15:45",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_airport",
+            "pickup_date": "Thu 30 April 2026",
+            "pickup_date_iso": "2026-04-30",
+            "pickup_time": "04:20",
+            "transit_time": "5 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-05-01_2026-05-05.html",
+        "section": "Recent Reservations",
+        "airport": "BSB",
+        "date": "Thu 30 April 2026",
+        "date_iso": "2026-04-30",
+        "city": "Lote 2, s/n Lago Sul, Brasilia, DF 71680900 BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Ibis Styles Brasilia Aeroporto",
+          "address": "Aeroporto Internacional de Brasília Setor de Concessionárias, Lote 2, s/n Lago Sul, Brasilia, DF 71680900 BR",
+          "phone": "+55-61-2196-6600",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Guinho Locacao",
+            "phone": "011-55-61-3552-1055",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 30 April 2026",
+            "pickup_date_iso": "2026-04-30",
+            "pickup_time": "10:15",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Guinho Locacao",
+            "phone": "011-55-61-3552-1055",
+            "direction": "to_airport",
+            "pickup_date": "Fri 01 May 2026",
+            "pickup_date_iso": "2026-05-01",
+            "pickup_time": "04:25",
+            "transit_time": "0 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-01": [
+      {
+        "source_file": "2026-05-01_2026-05-05.html",
+        "section": "Recent Reservations",
+        "airport": "BSB",
+        "date": "Thu 30 April 2026",
+        "date_iso": "2026-04-30",
+        "city": "Lote 2, s/n Lago Sul, Brasilia, DF 71680900 BR",
+        "pairing_id": "F4216-CA19762260426010526171015451685/26",
+        "hotel": {
+          "name": "Ibis Styles Brasilia Aeroporto",
+          "address": "Aeroporto Internacional de Brasília Setor de Concessionárias, Lote 2, s/n Lago Sul, Brasilia, DF 71680900 BR",
+          "phone": "+55-61-2196-6600",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Guinho Locacao",
+            "phone": "011-55-61-3552-1055",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 30 April 2026",
+            "pickup_date_iso": "2026-04-30",
+            "pickup_time": "10:15",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Guinho Locacao",
+            "phone": "011-55-61-3552-1055",
+            "direction": "to_airport",
+            "pickup_date": "Fri 01 May 2026",
+            "pickup_date_iso": "2026-05-01",
+            "pickup_time": "04:25",
+            "transit_time": "0 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      }
+    ],
+    "2026-05-07": [
+      {
+        "source_file": "2026-05-06_2026-05-10.html",
+        "section": "Recent Reservations",
+        "airport": "CGH",
+        "date": "Thu 07 May 2026",
+        "date_iso": "2026-05-07",
+        "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
+        "pairing_id": "F2607-CA19762070526100526151001251140/07",
+        "hotel": {
+          "name": "Ibis SP Congonhas",
+          "address": "R. Baronesa de Bela Vista, 801 - Vila Congonhas, SAO PAULO, SP BR",
+          "phone": "011-55-(11) 5097 3737/ 011-55-11-5097-37",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 07 May 2026",
+            "pickup_date_iso": "2026-05-07",
+            "pickup_time": "21:54",
+            "transit_time": "15 minutes"
+          },
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_airport",
+            "pickup_date": "Fri 08 May 2026",
+            "pickup_date_iso": "2026-05-08",
+            "pickup_time": "10:25",
+            "transit_time": "15 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-08": [
+      {
+        "source_file": "2026-05-06_2026-05-10.html",
+        "section": "Recent Reservations",
+        "airport": "CGH",
+        "date": "Thu 07 May 2026",
+        "date_iso": "2026-05-07",
+        "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
+        "pairing_id": "F2607-CA19762070526100526151001251140/07",
+        "hotel": {
+          "name": "Ibis SP Congonhas",
+          "address": "R. Baronesa de Bela Vista, 801 - Vila Congonhas, SAO PAULO, SP BR",
+          "phone": "011-55-(11) 5097 3737/ 011-55-11-5097-37",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 07 May 2026",
+            "pickup_date_iso": "2026-05-07",
+            "pickup_time": "21:54",
+            "transit_time": "15 minutes"
+          },
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_airport",
+            "pickup_date": "Fri 08 May 2026",
+            "pickup_date_iso": "2026-05-08",
+            "pickup_time": "10:25",
+            "transit_time": "15 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-05-06_2026-05-10.html",
+        "section": "Recent Reservations",
+        "airport": "GIG",
+        "date": "Fri 08 May 2026",
+        "date_iso": "2026-05-08",
+        "city": "Rio de Janeiro, RJ BR",
+        "pairing_id": "F2607-CA19762070526100526151001251140/07",
+        "hotel": {
+          "name": "Hotel Linx International Airport",
+          "address": "Av. Vinte de Janeiro S/N° Aeroporto Galeão, Rio de Janeiro, RJ BR",
+          "phone": "011 5521 2468-3400",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_hotel",
+            "pickup_date": "Fri 08 May 2026",
+            "pickup_date_iso": "2026-05-08",
+            "pickup_time": "19:10",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_airport",
+            "pickup_date": "Sat 09 May 2026",
+            "pickup_date_iso": "2026-05-09",
+            "pickup_time": "10:00",
+            "transit_time": "0 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-09": [
+      {
+        "source_file": "2026-05-06_2026-05-10.html",
+        "section": "Recent Reservations",
+        "airport": "GIG",
+        "date": "Fri 08 May 2026",
+        "date_iso": "2026-05-08",
+        "city": "Rio de Janeiro, RJ BR",
+        "pairing_id": "F2607-CA19762070526100526151001251140/07",
+        "hotel": {
+          "name": "Hotel Linx International Airport",
+          "address": "Av. Vinte de Janeiro S/N° Aeroporto Galeão, Rio de Janeiro, RJ BR",
+          "phone": "011 5521 2468-3400",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_hotel",
+            "pickup_date": "Fri 08 May 2026",
+            "pickup_date_iso": "2026-05-08",
+            "pickup_time": "19:10",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_airport",
+            "pickup_date": "Sat 09 May 2026",
+            "pickup_date_iso": "2026-05-09",
+            "pickup_time": "10:00",
+            "transit_time": "0 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-05-06_2026-05-10.html",
+        "section": "Upcoming Reservations",
+        "airport": "CWB",
+        "date": "Sat 09 May 2026",
+        "date_iso": "2026-05-09",
+        "city": "3450 - Centro, São José dos Pinhai BR",
+        "pairing_id": "F2607-CA19762070526100526151001251140/07",
+        "hotel": {
+          "name": "Slaviero Essential Curitiba Aeroporto",
+          "address": "Av. das Torres, 3450 - Centro, São José dos Pinhai BR",
+          "phone": "011 55 41 2170-4077",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_hotel",
+            "pickup_date": "Sat 09 May 2026",
+            "pickup_date_iso": "2026-05-09",
+            "pickup_time": "21:30",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_airport",
+            "pickup_date": "Sun 10 May 2026",
+            "pickup_date_iso": "2026-05-10",
+            "pickup_time": "10:35",
+            "transit_time": "0 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-10": [
+      {
+        "source_file": "2026-05-06_2026-05-10.html",
+        "section": "Upcoming Reservations",
+        "airport": "CWB",
+        "date": "Sat 09 May 2026",
+        "date_iso": "2026-05-09",
+        "city": "3450 - Centro, São José dos Pinhai BR",
+        "pairing_id": "F2607-CA19762070526100526151001251140/07",
+        "hotel": {
+          "name": "Slaviero Essential Curitiba Aeroporto",
+          "address": "Av. das Torres, 3450 - Centro, São José dos Pinhai BR",
+          "phone": "011 55 41 2170-4077",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_hotel",
+            "pickup_date": "Sat 09 May 2026",
+            "pickup_date_iso": "2026-05-09",
+            "pickup_time": "21:30",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Hills Tour Transportes",
+            "phone": "011-41-9-9159-7069",
+            "direction": "to_airport",
+            "pickup_date": "Sun 10 May 2026",
+            "pickup_date_iso": "2026-05-10",
+            "pickup_time": "10:35",
+            "transit_time": "0 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      }
+    ],
+    "2026-05-21": [
+      {
+        "source_file": "2026-05-21_2026-05-25.html",
+        "section": "Upcoming Reservations",
+        "airport": "GIG",
+        "date": "Thu 21 May 2026",
+        "date_iso": "2026-05-21",
+        "city": "Rio de Janeiro, RJ BR",
+        "pairing_id": "F4910-CA1722221052622052609051530425/21",
+        "hotel": {
+          "name": "Hotel Linx International Airport",
+          "address": "Av. Vinte de Janeiro S/N° Aeroporto Galeão, Rio de Janeiro, RJ BR",
+          "phone": "011 5521 2468-3400",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 21 May 2026",
+            "pickup_date_iso": "2026-05-21",
+            "pickup_time": "13:10",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_airport",
+            "pickup_date": "Fri 22 May 2026",
+            "pickup_date_iso": "2026-05-22",
+            "pickup_time": "04:45",
+            "transit_time": "0 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-22": [
+      {
+        "source_file": "2026-05-21_2026-05-25.html",
+        "section": "Upcoming Reservations",
+        "airport": "GIG",
+        "date": "Thu 21 May 2026",
+        "date_iso": "2026-05-21",
+        "city": "Rio de Janeiro, RJ BR",
+        "pairing_id": "F4910-CA1722221052622052609051530425/21",
+        "hotel": {
+          "name": "Hotel Linx International Airport",
+          "address": "Av. Vinte de Janeiro S/N° Aeroporto Galeão, Rio de Janeiro, RJ BR",
+          "phone": "011 5521 2468-3400",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 21 May 2026",
+            "pickup_date_iso": "2026-05-21",
+            "pickup_time": "13:10",
+            "transit_time": "0 minutes"
+          },
+          {
+            "company": "Seven Fly",
+            "phone": "011 55 21 98122-6618",
+            "direction": "to_airport",
+            "pickup_date": "Fri 22 May 2026",
+            "pickup_date_iso": "2026-05-22",
+            "pickup_time": "04:45",
+            "transit_time": "0 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      }
+    ],
+    "2026-05-26": [
+      {
+        "source_file": "2026-05-26_2026-05-30.html",
+        "section": "Upcoming Reservations",
+        "airport": "CNF",
+        "date": "Tue 26 May 2026",
+        "date_iso": "2026-05-26",
+        "city": "735 - Joana Darc, Santa Lagoa, MG 33400-000 BR",
+        "pairing_id": "F2998-CA19762260526300526092502301525/26",
+        "hotel": {
+          "name": "eSuites SPA Lagoa Santa",
+          "address": "R. dos Operários, 735 - Joana Darc, Santa Lagoa, MG 33400-000 BR",
+          "phone": "01155(31) 3688-1250/1251/1257/1254",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "T8T Servicos Auxiliares De Transportes Aereos Ltda",
+            "phone": "",
+            "direction": "to_hotel",
+            "pickup_date": "Tue 26 May 2026",
+            "pickup_date_iso": "2026-05-26",
+            "pickup_time": "13:40",
+            "transit_time": "25 minutes"
+          },
+          {
+            "company": "T8T Servicos Auxiliares De Transportes Aereos Ltda",
+            "phone": "",
+            "direction": "to_airport",
+            "pickup_date": "Wed 27 May 2026",
+            "pickup_date_iso": "2026-05-27",
+            "pickup_time": "08:50",
+            "transit_time": "25 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-27": [
+      {
+        "source_file": "2026-05-26_2026-05-30.html",
+        "section": "Upcoming Reservations",
+        "airport": "CNF",
+        "date": "Tue 26 May 2026",
+        "date_iso": "2026-05-26",
+        "city": "735 - Joana Darc, Santa Lagoa, MG 33400-000 BR",
+        "pairing_id": "F2998-CA19762260526300526092502301525/26",
+        "hotel": {
+          "name": "eSuites SPA Lagoa Santa",
+          "address": "R. dos Operários, 735 - Joana Darc, Santa Lagoa, MG 33400-000 BR",
+          "phone": "01155(31) 3688-1250/1251/1257/1254",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "T8T Servicos Auxiliares De Transportes Aereos Ltda",
+            "phone": "",
+            "direction": "to_hotel",
+            "pickup_date": "Tue 26 May 2026",
+            "pickup_date_iso": "2026-05-26",
+            "pickup_time": "13:40",
+            "transit_time": "25 minutes"
+          },
+          {
+            "company": "T8T Servicos Auxiliares De Transportes Aereos Ltda",
+            "phone": "",
+            "direction": "to_airport",
+            "pickup_date": "Wed 27 May 2026",
+            "pickup_date_iso": "2026-05-27",
+            "pickup_time": "08:50",
+            "transit_time": "25 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-05-26_2026-05-30.html",
+        "section": "Upcoming Reservations",
+        "airport": "REC",
+        "date": "Wed 27 May 2026",
+        "date_iso": "2026-05-27",
+        "city": "PE BR",
+        "pairing_id": "F2998-CA19762260526300526092502301525/26",
+        "hotel": {
+          "name": "Mar Hotel Conventions",
+          "address": "RUA BARAO DE SOUZA LEAO 451, PE BR",
+          "phone": "+55 (81) 3302-4446",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Pontual Receptivo Excursoes",
+            "phone": "011 5581 2125 4000",
+            "direction": "to_hotel",
+            "pickup_date": "Wed 27 May 2026",
+            "pickup_date_iso": "2026-05-27",
+            "pickup_time": "19:50",
+            "transit_time": "5 minutes"
+          },
+          {
+            "company": "Pontual Receptivo Excursoes",
+            "phone": "011 5581 2125 4000",
+            "direction": "to_airport",
+            "pickup_date": "Thu 28 May 2026",
+            "pickup_date_iso": "2026-05-28",
+            "pickup_time": "12:30",
+            "transit_time": "5 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-28": [
+      {
+        "source_file": "2026-05-26_2026-05-30.html",
+        "section": "Upcoming Reservations",
+        "airport": "REC",
+        "date": "Wed 27 May 2026",
+        "date_iso": "2026-05-27",
+        "city": "PE BR",
+        "pairing_id": "F2998-CA19762260526300526092502301525/26",
+        "hotel": {
+          "name": "Mar Hotel Conventions",
+          "address": "RUA BARAO DE SOUZA LEAO 451, PE BR",
+          "phone": "+55 (81) 3302-4446",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Pontual Receptivo Excursoes",
+            "phone": "011 5581 2125 4000",
+            "direction": "to_hotel",
+            "pickup_date": "Wed 27 May 2026",
+            "pickup_date_iso": "2026-05-27",
+            "pickup_time": "19:50",
+            "transit_time": "5 minutes"
+          },
+          {
+            "company": "Pontual Receptivo Excursoes",
+            "phone": "011 5581 2125 4000",
+            "direction": "to_airport",
+            "pickup_date": "Thu 28 May 2026",
+            "pickup_date_iso": "2026-05-28",
+            "pickup_time": "12:30",
+            "transit_time": "5 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      },
+      {
+        "source_file": "2026-05-26_2026-05-30.html",
+        "section": "Upcoming Reservations",
+        "airport": "CGH",
+        "date": "Thu 28 May 2026",
+        "date_iso": "2026-05-28",
+        "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
+        "pairing_id": "F2998-CA19762260526300526092502301525/26",
+        "hotel": {
+          "name": "Ibis SP Congonhas",
+          "address": "R. Baronesa de Bela Vista, 801 - Vila Congonhas, SAO PAULO, SP BR",
+          "phone": "011-55-(11) 5097 3737/ 011-55-11-5097-37",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 28 May 2026",
+            "pickup_date_iso": "2026-05-28",
+            "pickup_time": "21:20",
+            "transit_time": "15 minutes"
+          },
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_airport",
+            "pickup_date": "Fri 29 May 2026",
+            "pickup_date_iso": "2026-05-29",
+            "pickup_time": "11:40",
+            "transit_time": "15 minutes"
+          }
+        ]
+      }
+    ],
+    "2026-05-29": [
+      {
+        "source_file": "2026-05-26_2026-05-30.html",
+        "section": "Upcoming Reservations",
+        "airport": "CGH",
+        "date": "Thu 28 May 2026",
+        "date_iso": "2026-05-28",
+        "city": "801 - Vila Congonhas, SAO PAULO, SP BR",
+        "pairing_id": "F2998-CA19762260526300526092502301525/26",
+        "hotel": {
+          "name": "Ibis SP Congonhas",
+          "address": "R. Baronesa de Bela Vista, 801 - Vila Congonhas, SAO PAULO, SP BR",
+          "phone": "011-55-(11) 5097 3737/ 011-55-11-5097-37",
+          "confirmation": "PLANNED"
+        },
+        "transports": [
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_hotel",
+            "pickup_date": "Thu 28 May 2026",
+            "pickup_date_iso": "2026-05-28",
+            "pickup_time": "21:20",
+            "transit_time": "15 minutes"
+          },
+          {
+            "company": "Expresso RS CGH",
+            "phone": "011-55-11-2935-3823",
+            "direction": "to_airport",
+            "pickup_date": "Fri 29 May 2026",
+            "pickup_date_iso": "2026-05-29",
+            "pickup_time": "11:40",
+            "transit_time": "15 minutes"
+          }
+        ],
+        "transport_context": "to_airport"
+      }
+    ]
+  }
 }

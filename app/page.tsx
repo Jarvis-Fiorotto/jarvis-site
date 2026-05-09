@@ -32,17 +32,28 @@ type RosterData = {
   counts: { events: number; duties: number; pairings: number; activities: number };
   events: RosterEvent[];
 };
+type HotelTransport = {
+  company: string;
+  phone: string;
+  direction: string;
+  pickup_date: string;
+  pickup_date_iso?: string | null;
+  pickup_time: string;
+  transit_time: string;
+};
+
 type HotelReservation = {
   section: string;
   airport: string;
   date: string;
+  date_iso?: string | null;
   city: string;
   pairing_id: string;
   hotel?: { name: string; address: string; phone: string; confirmation: string } | null;
-  transports: Array<{ company: string; phone: string; direction: string; pickup_date: string; pickup_time: string; transit_time: string }>;
+  transports: HotelTransport[];
 };
 
-type HotelData = { source: string; generated_at: string; count: number; reservations: HotelReservation[] };
+type HotelData = { source: string; generated_at: string; count: number; reservations: HotelReservation[]; by_date?: Record<string, HotelReservation[]> };
 
 
 const data = roster as RosterData;
@@ -105,6 +116,20 @@ function formatDuration(minutes: number) {
   return `${h}h${String(m).padStart(2, "0")}`;
 }
 
+
+function transportLabel(direction: string) {
+  return direction === "to_hotel" ? "Aeroporto → hotel" : "Hotel → aeroporto";
+}
+
+function hotelsForDay(day: string) {
+  return hotelReservations
+    .map((reservation) => ({
+      reservation,
+      transports: reservation.transports.filter((transport) => transport.pickup_date_iso === day || reservation.date_iso === day && transport.direction === "to_hotel")
+    }))
+    .filter((item) => item.reservation.date_iso === day || item.transports.length);
+}
+
 function daySummary(dayEvents: RosterEvent[]) {
   const flights = dayEvents.filter((event) => event.type === "FLY");
   const hotels = dayEvents.filter((event) => event.type === "HOTEL");
@@ -151,6 +176,7 @@ export default async function Home() {
   const focusDay = firstTodayOrFuture || allDays[0];
   const focusEvents = grouped[focusDay] || [];
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
+  const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
 
   return (
@@ -214,6 +240,22 @@ export default async function Home() {
               </div>
             )}
 
+            {focusHotels.length > 0 && (
+              <div className="dayHotelBlock">
+                {focusHotels.map(({ reservation, transports }) => (
+                  <div className="dayHotelItem" key={`${reservation.airport}-${reservation.date}-${reservation.hotel?.name}`}>
+                    <strong>{reservation.airport} · {reservation.hotel?.name || "Hotel"}</strong>
+                    <span>{reservation.hotel?.address || reservation.city}</span>
+                    {transports.map((transport) => (
+                      <small key={`${transport.direction}-${transport.pickup_time}`}>
+                        {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}
+                      </small>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="compactEvents">
               {focusEvents.map((event) => (
                 <div className={`compactEvent ${eventKind(event)}`} key={event.id}>
@@ -249,7 +291,7 @@ export default async function Home() {
               <span>{hotelReservations.length} item(ns)</span>
             </div>
             <div className="hotelList">
-              {hotelReservations.slice(0, 3).map((reservation) => (
+              {hotelReservations.map((reservation) => (
                 <div className="hotelItem" key={`${reservation.airport}-${reservation.date}`}>
                   <div className="hotelAirport">{reservation.airport}</div>
                   <div>
@@ -287,6 +329,7 @@ export default async function Home() {
             {days.map((day) => {
               const dayEvents = grouped[day];
               const summary = daySummary(dayEvents);
+              const dayHotels = hotelsForDay(day);
               return (
                 <article className={`dayCard ${day === focusDay ? "focus" : ""}`} key={day}>
                   <div className="dayHeader">
@@ -313,6 +356,20 @@ export default async function Home() {
                     ))}
                     {dayEvents.length > 5 && <div className="moreEvents">+ {dayEvents.length - 5} eventos no dia</div>}
                   </div>
+                  {dayHotels.length > 0 && (
+                    <div className="embeddedHotels">
+                      {dayHotels.map(({ reservation, transports }) => (
+                        <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
+                          <strong>{reservation.airport} · {reservation.hotel?.name || "Hotel"}</strong>
+                          {transports.map((transport) => (
+                            <span key={`${transport.direction}-${transport.pickup_time}`}>
+                              {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}
+                            </span>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </article>
               );
             })}

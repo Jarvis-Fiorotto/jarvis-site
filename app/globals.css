@@ -378,3 +378,30 @@ button { cursor: pointer; }
 .hotelItem span, .hotelItem small { color: var(--muted); line-height: 1.35; }
 .hotelItem small { display: block; }
 @media (max-width: 1100px) { .hotelModule { grid-column: span 1; } }
+.dayHotelBlock {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+}
+.dayHotelItem, .embeddedHotel {
+  border: 1px solid rgba(255, 184, 77, .22);
+  background: rgba(255, 184, 77, .075);
+  border-radius: 16px;
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+}
+.dayHotelItem span, .dayHotelItem small, .embeddedHotel span {
+  color: var(--muted);
+  line-height: 1.35;
+}
+.embeddedHotels {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.embeddedHotel {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.embeddedHotel strong { color: var(--orange); }
