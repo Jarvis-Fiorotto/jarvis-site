@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-09T08:23:11.475Z",
+  "updated_at": "2026-05-09T11:31:36.816Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,18 +13,18 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 10
+    "queries": 16
   },
   "last_run": {
     "queries": 6,
-    "candidates": 7,
+    "candidates": 8,
     "logs": [
       "updated 2026-05-09|AD2662|GIG|POA|11:00",
       "updated 2026-05-09|AD2915|POA|CWB|14:25",
       "updated 2026-05-09|AD4023|CWB|GIG|17:25",
       "updated 2026-05-09|AD4024|GIG|CWB|19:40",
-      "error 2026-05-10|AD2753|CWB|VCP|11:35: FlightAware HTTP 400",
-      "error 2026-05-10|AD4727|VCP|CAC|13:55: FlightAware HTTP 400"
+      "updated 2026-05-10|AD2753|CWB|VCP|11:35",
+      "updated 2026-05-10|AD4727|VCP|CAC|13:55"
     ]
   },
   "flights": {
@@ -79,7 +79,7 @@
         "start_time": "11:00",
         "end_time": "13:10"
       },
-      "updated_at": "2026-05-09T08:23:11.475Z",
+      "updated_at": "2026-05-09T11:31:36.816Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2662",
       "ident_icao": "AZU2662",
@@ -118,7 +118,7 @@
         "start_time": "14:25",
         "end_time": "15:35"
       },
-      "updated_at": "2026-05-09T08:23:11.475Z",
+      "updated_at": "2026-05-09T11:31:36.816Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2915",
       "ident_icao": "AZU2915",
@@ -157,7 +157,7 @@
         "start_time": "17:25",
         "end_time": "18:50"
       },
-      "updated_at": "2026-05-09T08:23:11.475Z",
+      "updated_at": "2026-05-09T11:31:36.816Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4023",
       "ident_icao": "AZU4023",
@@ -181,7 +181,7 @@
       "actual_in": null,
       "terminal_origin": null,
       "terminal_destination": "2",
-      "gate_origin": null,
+      "gate_origin": "12",
       "gate_destination": null
     },
     "2026-05-09|AD4024|GIG|CWB|19:40": {
@@ -196,7 +196,7 @@
         "start_time": "19:40",
         "end_time": "21:10"
       },
-      "updated_at": "2026-05-09T08:23:11.475Z",
+      "updated_at": "2026-05-09T11:31:36.816Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4024",
       "ident_icao": "AZU4024",
@@ -220,7 +220,7 @@
       "actual_in": null,
       "terminal_origin": "2",
       "terminal_destination": null,
-      "gate_origin": "B33",
+      "gate_origin": "B27",
       "gate_destination": null
     },
     "2026-05-10|AD2753|CWB|VCP|11:35": {
@@ -235,14 +235,32 @@
         "start_time": "11:35",
         "end_time": "12:35"
       },
-      "updated_at": "2026-05-09T08:23:11.475Z",
+      "updated_at": "2026-05-09T11:31:36.816Z",
       "source": "flightaware_aeroapi",
-      "normalized_status": "unavailable",
-      "error": {
-        "message": "FlightAware HTTP 400",
-        "status": 400,
-        "retry_after": null
-      }
+      "ident": "AZU2753",
+      "ident_icao": "AZU2753",
+      "ident_iata": "AD2753",
+      "fa_flight_id": "AZU2753-1778221554-airline-814p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "CWB",
+      "destination": "VCP",
+      "scheduled_out": "2026-05-10T14:35:00Z",
+      "estimated_out": "2026-05-10T14:35:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-10T14:45:00Z",
+      "estimated_off": "2026-05-10T14:45:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-10T15:25:00Z",
+      "estimated_on": "2026-05-10T15:25:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-10T15:35:00Z",
+      "estimated_in": "2026-05-10T15:35:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
     },
     "2026-05-10|AD4727|VCP|CAC|13:55": {
       "key": "2026-05-10|AD4727|VCP|CAC|13:55",
@@ -256,14 +274,32 @@
         "start_time": "13:55",
         "end_time": "15:25"
       },
-      "updated_at": "2026-05-09T08:23:11.475Z",
+      "updated_at": "2026-05-09T11:31:36.816Z",
       "source": "flightaware_aeroapi",
-      "normalized_status": "unavailable",
-      "error": {
-        "message": "FlightAware HTTP 400",
-        "status": 400,
-        "retry_after": null
-      }
+      "ident": "AZU4727",
+      "ident_icao": "AZU4727",
+      "ident_iata": "AD4727",
+      "fa_flight_id": "AZU4727-1778228313-airline-1305p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "VCP",
+      "destination": "CAC",
+      "scheduled_out": "2026-05-10T16:55:00Z",
+      "estimated_out": "2026-05-10T16:55:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-10T17:05:00Z",
+      "estimated_off": "2026-05-10T17:05:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-10T18:15:00Z",
+      "estimated_on": "2026-05-10T18:15:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-10T18:25:00Z",
+      "estimated_in": "2026-05-10T18:25:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
     }
   }
 }
