@@ -493,3 +493,7 @@ button { cursor: pointer; }
   color: var(--text) !important;
   font-weight: 900;
 }
+
+.overnightWindow::before {
+  content: "⚠ ";
+}

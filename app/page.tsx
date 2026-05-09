@@ -351,7 +351,15 @@ function overnightWindow(reservation: HotelReservation) {
   const arrival = arrivalAtHotel(toHotel) || toHotel?.pickup_time || null;
   const pickup = toAirport?.pickup_time || null;
   if (!arrival && !pickup) return null;
-  return { arrival, pickup, pickupDate: toAirport?.pickup_date_iso || null };
+  return { arrival, pickup, pickupDate: toAirport?.pickup_date_iso || null, pickupCompany: toAirport?.company || null };
+}
+
+function overnightText(reservation: HotelReservation) {
+  const window = overnightWindow(reservation);
+  if (!window) return null;
+  if (window.arrival && window.pickup) return `Transporte: deixa aprox. ${window.arrival} · esteja pronto ${window.pickup}`;
+  if (window.pickup) return `Esteja pronto ${window.pickup}`;
+  return `Transporte: deixa aprox. ${window.arrival}`;
 }
 
 function displayEvents(dayEvents: RosterEvent[]) {
@@ -521,9 +529,9 @@ export default async function Home() {
                   <div className="dayHotelItem" key={`${reservation.airport}-${reservation.date}-${reservation.hotel?.name}`}>
                     <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
                     <span>{reservation.hotel?.address || reservation.city}</span>
-                    {overnightWindow(reservation) && (
+                    {overnightText(reservation) && (
                       <small className="overnightWindow">
-                        Pernoite: chegada aprox. {overnightWindow(reservation)?.arrival || "—"} → van busca {overnightWindow(reservation)?.pickup || "—"}
+                        {overnightText(reservation)}
                       </small>
                     )}
                     {transports.map((transport) => (
@@ -619,9 +627,9 @@ export default async function Home() {
                       {dayHotels.map(({ reservation, transports }) => (
                         <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
                           <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
-                          {overnightWindow(reservation) && (
+                          {overnightText(reservation) && (
                             <span className="overnightWindow">
-                              Pernoite: chegada aprox. {overnightWindow(reservation)?.arrival || "—"} → van busca {overnightWindow(reservation)?.pickup || "—"}
+                              {overnightText(reservation)}
                             </span>
                           )}
                           {transports.map((transport) => (
