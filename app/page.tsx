@@ -1,5 +1,6 @@
 import roster from "./data/roster-latest.json";
 import hotels from "./data/hotels-latest.json";
+import flightStatusJson from "./data/flight-status-latest.json";
 import { currentUser } from "../lib/auth";
 import { redirect } from "next/navigation";
 
@@ -55,9 +56,42 @@ type HotelReservation = {
 
 type HotelData = { source: string; generated_at: string; count: number; reservations: HotelReservation[]; by_date?: Record<string, HotelReservation[]> };
 
+type FlightStatus = {
+  key: string;
+  updated_at?: string | null;
+  source?: string | null;
+  normalized_status?: string | null;
+  status?: string | null;
+  ident_icao?: string | null;
+  ident_iata?: string | null;
+  fa_flight_id?: string | null;
+  scheduled_out?: string | null;
+  estimated_out?: string | null;
+  actual_out?: string | null;
+  scheduled_off?: string | null;
+  estimated_off?: string | null;
+  actual_off?: string | null;
+  scheduled_on?: string | null;
+  estimated_on?: string | null;
+  actual_on?: string | null;
+  scheduled_in?: string | null;
+  estimated_in?: string | null;
+  actual_in?: string | null;
+  gate_origin?: string | null;
+  gate_destination?: string | null;
+  error?: { message?: string; status?: number | null } | null;
+};
+
+type FlightStatusData = {
+  updated_at?: string | null;
+  provider: string;
+  usage?: { month?: string | null; queries?: number };
+  flights: Record<string, FlightStatus>;
+};
 
 const data = roster as RosterData;
 const hotelData = hotels as HotelData;
+const flightStatusData = flightStatusJson as FlightStatusData;
 const hotelReservations = hotelData.reservations || [];
 const events = data.events.filter((event) => !event.canceled);
 const collator = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
@@ -99,6 +133,77 @@ function airportRoute(from?: string | null, to?: string | null, withCodes = true
   if (!from && !to) return "—";
   if (from === to) return label(from);
   return `${label(from)} → ${label(to)}`;
+}
+
+function cleanFlightLabel(label: string) {
+  return label.replace(/^DHD\s+/i, "").trim();
+}
+
+function flightStatusKey(event: RosterEvent) {
+  return `${event.date}|${cleanFlightLabel(event.label)}|${event.from}|${event.to}|${event.start_time}`;
+}
+
+function flightAwareUrl(event: RosterEvent, status?: FlightStatus | null) {
+  const ident = status?.ident_icao || cleanFlightLabel(event.label).replace(/^AD/, "AZU");
+  return `https://www.flightaware.com/live/flight/${encodeURIComponent(ident)}`;
+}
+
+function flightRadarUrl(event: RosterEvent) {
+  return `https://www.flightradar24.com/data/flights/${cleanFlightLabel(event.label).toLowerCase()}`;
+}
+
+function flightStatusFor(event: RosterEvent) {
+  return flightStatusData.flights?.[flightStatusKey(event)] || null;
+}
+
+function timeFromIso(iso?: string | null) {
+  if (!iso) return null;
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(iso));
+}
+
+function delayMinutes(scheduled?: string | null, estimated?: string | null, actual?: string | null) {
+  const reference = actual || estimated;
+  if (!scheduled || !reference) return null;
+  const minutes = Math.round((new Date(reference).getTime() - new Date(scheduled).getTime()) / 60000);
+  return Math.abs(minutes) >= 5 ? minutes : 0;
+}
+
+function flightStatusText(status?: FlightStatus | null) {
+  if (!status) return "Status online ainda não consultado";
+  if (status.error || status.normalized_status === "unavailable") return "Status online indisponível";
+  const labels: Record<string, string> = {
+    scheduled: "Programado",
+    delayed: "Atrasado",
+    airborne: "Em voo",
+    landed: "Pousou",
+    cancelled: "Cancelado",
+    unknown: "A confirmar"
+  };
+  return labels[status.normalized_status || "unknown"] || status.status || "A confirmar";
+}
+
+function FlightLiveInfo({ event }: { event: RosterEvent }) {
+  if (event.type !== "FLY") return null;
+  const status = flightStatusFor(event);
+  const depTime = timeFromIso(status?.actual_off || status?.actual_out || status?.estimated_off || status?.estimated_out);
+  const arrTime = timeFromIso(status?.actual_on || status?.actual_in || status?.estimated_on || status?.estimated_in);
+  const depDelay = delayMinutes(status?.scheduled_off || status?.scheduled_out, status?.estimated_off || status?.estimated_out, status?.actual_off || status?.actual_out);
+  const arrDelay = delayMinutes(status?.scheduled_on || status?.scheduled_in, status?.estimated_on || status?.estimated_in, status?.actual_on || status?.actual_in);
+  const delay = arrDelay ?? depDelay;
+  return (
+    <div className={`flightStatus ${status?.normalized_status || "notFetched"}`}>
+      <span>{flightStatusText(status)}</span>
+      {depTime && <small>Saída: {depTime}</small>}
+      {arrTime && <small>Chegada: {arrTime}</small>}
+      {delay !== null && delay !== 0 && <small>{delay > 0 ? `+${delay} min` : `${delay} min`}</small>}
+      <a href={flightAwareUrl(event, status)} target="_blank" rel="noreferrer">FlightAware</a>
+      <a href={flightRadarUrl(event)} target="_blank" rel="noreferrer">Flightradar24</a>
+    </div>
+  );
 }
 
 const NON_OP_LABELS: Record<string, string> = {
@@ -396,6 +501,7 @@ export default async function Home() {
                   <div>
                     <strong>{event.label}</strong>
                     <span>{kindLabel(event)} · {shortAirport(event)}</span>
+                    <FlightLiveInfo event={event} />
                   </div>
                   <small>{kindLabel(event)}</small>
                 </div>
@@ -460,6 +566,7 @@ export default async function Home() {
                             <strong>{event.label}</strong>
                             <span>{kindLabel(event)} · {shortAirport(event)}</span>
                           </div>
+                          <FlightLiveInfo event={event} />
                         </div>
                       </div>
                     ))}
@@ -515,6 +622,7 @@ export default async function Home() {
                                 <strong>{event.label}</strong>
                                 <span>{kindLabel(event)} · {shortAirport(event)}</span>
                               </div>
+                              <FlightLiveInfo event={event} />
                             </div>
                           </div>
                         ))}

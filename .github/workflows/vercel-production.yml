@@ -4,12 +4,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # Atualiza status de voo em janelas espaçadas. O script ainda aplica cache,
+    # limite mensal e no máximo 6 consultas por execução.
+    - cron: "*/30 * * * *"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +32,33 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Update flight status cache
+        if: ${{ secrets.FLIGHTAWARE_API_KEY != '' }}
+        run: npm run update:flight-status
+        env:
+          FLIGHTAWARE_API_KEY: ${{ secrets.FLIGHTAWARE_API_KEY }}
+          FLIGHTAWARE_MONTHLY_QUERY_CAP: "300"
+          FLIGHTAWARE_MAX_QUERIES_PER_RUN: "6"
+          FLIGHTAWARE_MIN_SECONDS_BETWEEN_QUERIES: "7"
+          FLIGHTAWARE_ACTIVE_REFRESH_MINUTES: "15"
+          FLIGHTAWARE_SCHEDULED_REFRESH_MINUTES: "180"
+          FLIGHTAWARE_COMPLETED_REFRESH_MINUTES: "1440"
+          FLIGHTAWARE_LOOKBACK_HOURS: "8"
+          FLIGHTAWARE_LOOKAHEAD_HOURS: "36"
+
+      - name: Persist flight status cache
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          if git diff --quiet -- app/data/flight-status-latest.json; then
+            echo "No flight status cache changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/data/flight-status-latest.json
+          git commit -m "Update flight status cache"
+          git push
 
       - name: Build
         run: npx vercel@latest build --prod --token=${{ secrets.VERCEL_TOKEN }}

@@ -450,3 +450,42 @@ button { cursor: pointer; }
 .dayCard.hiddenDay .dayHeader strong {
   color: var(--orange);
 }
+.flightStatus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.flightStatus span {
+  color: var(--text);
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.10);
+}
+.flightStatus small {
+  color: var(--muted);
+  font-weight: 700;
+}
+.flightStatus a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 800;
+}
+.flightStatus.scheduled span { color: var(--cyan); background: rgba(62,231,255,.10); border-color: rgba(62,231,255,.22); }
+.flightStatus.delayed span { color: var(--orange); background: rgba(255,184,77,.12); border-color: rgba(255,184,77,.26); }
+.flightStatus.airborne span { color: var(--green); background: rgba(98,255,176,.10); border-color: rgba(98,255,176,.24); }
+.flightStatus.landed span { color: var(--green); background: rgba(98,255,176,.08); border-color: rgba(98,255,176,.18); }
+.flightStatus.cancelled span,
+.flightStatus.unavailable span { color: var(--red); background: rgba(255,93,115,.10); border-color: rgba(255,93,115,.22); }
+.compactEvent .flightStatus {
+  grid-column: 1 / -1;
+}
+@media (max-width: 760px) {
+  .flightStatus { gap: 5px; }
+  .flightStatus a { width: max-content; }
+}
