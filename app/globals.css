@@ -405,3 +405,29 @@ button { cursor: pointer; }
   font-size: 13px;
 }
 .embeddedHotel strong { color: var(--orange); }
+.pastTrips {
+  margin-top: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 22px;
+  background: rgba(255,255,255,.045);
+  overflow: hidden;
+}
+.pastTrips summary {
+  list-style: none;
+  padding: 16px 18px;
+  cursor: pointer;
+  color: var(--cyan);
+  font-weight: 900;
+}
+.pastTrips summary::-webkit-details-marker { display: none; }
+.pastTrips summary::after { content: " +"; }
+.pastTrips[open] summary::after { content: " –"; }
+.pastDays {
+  padding: 0 14px 14px;
+}
+.dayCard.past {
+  opacity: .78;
+}
+.dayCard.past .dayHeader {
+  background: rgba(255,255,255,.025);
+}
