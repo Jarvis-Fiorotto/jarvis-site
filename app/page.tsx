@@ -412,9 +412,42 @@ function daySummary(dayEvents: RosterEvent[]) {
   return { flights, hotels, first, last, route };
 }
 
+function transportDateTime(transport: HotelTransport) {
+  if (!transport.pickup_date_iso || !transport.pickup_time) return null;
+  return new Date(`${transport.pickup_date_iso}T${transport.pickup_time}:00-03:00`);
+}
+
 function getUpcoming() {
   const now = new Date();
-  return events.find((event) => new Date(event.end_local) >= now) || events[0];
+  const rosterItems = events
+    .filter((event) => event.type !== "HOTEL")
+    .map((event) => ({
+      sortAt: new Date(event.end_local),
+      label: event.label,
+      date: event.date,
+      time: `${event.start_time} → ${event.end_time}`,
+      detail: shortAirport(event),
+      priority: event.type === "CHECK" && event.subtype === "IN" ? 1 : 2
+    }));
+  const transportItems = hotelReservations.flatMap((reservation) =>
+    reservation.transports.map((transport) => {
+      const sortAt = transportDateTime(transport);
+      if (!sortAt) return null;
+      const isPickup = transport.direction === "to_airport";
+      return {
+        sortAt,
+        label: isPickup ? "Esteja pronto para a van" : "Van para o hotel",
+        date: transport.pickup_date_iso || reservation.date_iso || "",
+        time: transport.pickup_time,
+        detail: `${airportLabel(reservation.airport)} · ${transport.company}`,
+        priority: isPickup ? 0 : 3
+      };
+    }).filter((item): item is NonNullable<typeof item> => item !== null)
+  );
+  const upcoming = [...rosterItems, ...transportItems]
+    .filter((item) => item.sortAt >= now)
+    .sort((a, b) => a.sortAt.getTime() - b.sortAt.getTime() || a.priority - b.priority)[0];
+  return upcoming || rosterItems[0] || null;
 }
 
 function statCards(monthStart: string, monthEnd: string) {
@@ -565,8 +598,8 @@ export default async function Home() {
             {upcoming && (
               <>
                 <p>{longDate.format(parseDate(upcoming.date))}</p>
-                <strong>{upcoming.start_time} → {upcoming.end_time}</strong>
-                <span>{shortAirport(upcoming)}</span>
+                <strong>{upcoming.time}</strong>
+                <span>{upcoming.detail}</span>
               </>
             )}
           </article>
