@@ -166,6 +166,32 @@ function hotelsForDay(day: string) {
     .filter((item) => item.reservation.date_iso === day || item.transports.length);
 }
 
+function firstTime(times: string[]) {
+  return times.filter(Boolean).sort()[0];
+}
+
+function lastTime(times: string[]) {
+  return times.filter(Boolean).sort().at(-1);
+}
+
+function operationalWindow(dayEvents: RosterEvent[], day: string) {
+  const dayHotels = hotelsForDay(day);
+  const toAirport = dayHotels.flatMap(({ transports }) =>
+    transports.filter((transport) => transport.direction === "to_airport" && transport.pickup_date_iso === day).map((transport) => transport.pickup_time)
+  );
+  const toHotel = dayHotels.flatMap(({ transports }) =>
+    transports.filter((transport) => transport.direction === "to_hotel" && transport.pickup_date_iso === day).map((transport) => transport.pickup_time)
+  );
+  const flights = dayEvents.filter((event) => event.type === "FLY");
+  const checkIn = dayEvents.find((event) => event.type === "CHECK" && event.subtype === "IN");
+  const activeEvents = dayEvents.filter((event) => event.type !== "HOTEL");
+  return {
+    start: firstTime(toAirport) || checkIn?.start_time || activeEvents[0]?.start_time || dayEvents[0]?.start_time || "—",
+    end: lastTime(toHotel) || flights.at(-1)?.end_time || activeEvents.at(-1)?.end_time || dayEvents.at(-1)?.end_time || "—",
+    source: toAirport.length || toHotel.length ? "transporte" : "escala"
+  };
+}
+
 function daySummary(dayEvents: RosterEvent[]) {
   const flights = dayEvents.filter((event) => event.type === "FLY");
   const hotels = dayEvents.filter((event) => event.type === "HOTEL");
@@ -215,6 +241,7 @@ export default async function Home() {
   const focusDay = firstTodayOrFuture || allDays[0];
   const focusEvents = grouped[focusDay] || [];
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
+  const focusWindow = operationalWindow(focusEvents, focusDay);
   const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
 
@@ -275,8 +302,8 @@ export default async function Home() {
                   <span>{focusSummary.flights.length} voo(s) · {focusSummary.hotels.length ? "com hotel" : "sem hotel"}</span>
                 </div>
                 <div className="todayTimes">
-                  <span>Início</span><strong>{focusSummary.first?.start_time}</strong>
-                  <span>Fim</span><strong>{focusSummary.last?.end_time}</strong>
+                  <span>Começo</span><strong>{focusWindow.start}</strong>
+                  <span>Fim</span><strong>{focusWindow.end}</strong>
                 </div>
               </div>
             )}
