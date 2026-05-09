@@ -405,3 +405,26 @@ button { cursor: pointer; }
 .dayCard.past .dayHeader {
   background: rgba(255,255,255,.025);
 }
+.statusStack { display: grid; gap: 8px; justify-items: end; }
+.periodChip { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.miniStat {
+  min-height: 96px;
+  padding: 16px 14px;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 3px;
+}
+.miniStat span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.miniStat strong { font-size: 25px; line-height: 1; }
+.miniStat small { max-width: 120px; line-height: 1.25; }
+@media (min-width: 1101px) {
+  .moduleGrid { grid-template-columns: 1.45fr .72fr repeat(2, .34fr); }
+}
+@media (max-width: 760px) {
+  .statusStack { justify-items: start; }
+}

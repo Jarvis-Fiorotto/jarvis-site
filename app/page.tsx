@@ -62,6 +62,7 @@ const hotelReservations = hotelData.reservations || [];
 const events = data.events.filter((event) => !event.canceled);
 const collator = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
 const longDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+const shortDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" });
 
 const AIRPORTS: Record<string, string> = {
   VCP: "Viracopos / Campinas",
@@ -182,18 +183,19 @@ function getUpcoming() {
 }
 
 function statCards() {
-  const flightEvents = events.filter((event) => event.type === "FLY");
-  const hotelEvents = events.filter((event) => event.type === "HOTEL");
+  const visibleEvents = events.filter((event) => event.date >= data.period_start && event.date <= data.period_end);
+  const flightEvents = visibleEvents.filter((event) => event.type === "FLY");
+  const hotelEvents = hotelReservations;
   const airports = new Set(flightEvents.flatMap((event) => [event.from, event.to].filter(Boolean)));
   const blockMinutes = flightEvents.reduce((sum, event) => sum + durationMinutes(event), 0);
+  const period = `${shortDate.format(parseDate(data.period_start))}–${shortDate.format(parseDate(data.period_end))}`;
   return [
-    { label: "Voos", value: String(flightEvents.length), hint: "trechos programados" },
-    { label: "Pernoites", value: String(hotelEvents.length), hint: "hotéis na escala" },
-    { label: "Aeroportos", value: String(airports.size), hint: "origens/destinos" },
-    { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: "estimado pela escala" }
+    { label: "Voos", value: String(flightEvents.length), hint: `na escala ${period}` },
+    { label: "Hotéis", value: String(hotelEvents.length), hint: `reservas ${period}` },
+    { label: "Cidades", value: String(airports.size), hint: `aeroportos ${period}` },
+    { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: `total ${period}` }
   ];
 }
-
 export default async function Home() {
   const user = await currentUser();
   if (!user) redirect("/login");
@@ -250,7 +252,10 @@ export default async function Home() {
               Mostrando primeiro o que ainda vem pela frente. Histórico fica escondido para não poluir.
             </p>
           </div>
-          <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
+          <div className="statusStack">
+            <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
+            <div className="periodChip">Escala {shortDate.format(parseDate(data.period_start))}–{shortDate.format(parseDate(data.period_end))}</div>
+          </div>
         </header>
 
         <section className="moduleGrid">
