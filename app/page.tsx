@@ -126,6 +126,26 @@ function parseDate(date: string) {
   return new Date(`${date}T12:00:00-03:00`);
 }
 
+function isoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date: string, amount: number) {
+  const next = parseDate(date);
+  next.setDate(next.getDate() + amount);
+  return isoDate(next);
+}
+
+function eachDate(start: string, end: string) {
+  const days: string[] = [];
+  let cursor = start;
+  while (cursor <= end) {
+    days.push(cursor);
+    cursor = addDays(cursor, 1);
+  }
+  return days;
+}
+
 function shortAirport(event: RosterEvent) {
   return airportRoute(event.from, event.to);
 }
@@ -210,6 +230,8 @@ function getUpcoming() {
 
 function statCards() {
   const visibleEvents = events.filter((event) => event.date >= data.period_start && event.date <= data.period_end);
+  const eventDays = new Set(visibleEvents.map((event) => event.date));
+  const hiddenDays = eachDate(data.period_start, data.period_end).filter((day) => !eventDays.has(day));
   const flightEvents = visibleEvents.filter((event) => event.type === "FLY");
   const hotelEvents = hotelReservations;
   const airports = new Set(flightEvents.flatMap((event) => [event.from, event.to].filter(Boolean)));
@@ -218,7 +240,7 @@ function statCards() {
   return [
     { label: "Voos", value: String(flightEvents.length), hint: `na escala ${period}` },
     { label: "Hotéis", value: String(hotelEvents.length), hint: `reservas ${period}` },
-    { label: "Cidades", value: String(airports.size), hint: `aeroportos ${period}` },
+    { label: "Dias ocultos", value: String(hiddenDays.length), hint: `sem alocação ${period}` },
     { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: `total ${period}` }
   ];
 }
@@ -227,7 +249,7 @@ export default async function Home() {
   if (!user) redirect("/login");
 
   const grouped = groupByDay(events);
-  const allDays = Object.keys(grouped).sort();
+  const allDays = eachDate(data.period_start, data.period_end);
   const todayKey = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
     year: "numeric",
@@ -241,7 +263,7 @@ export default async function Home() {
   const focusDay = firstTodayOrFuture || allDays[0];
   const focusEvents = grouped[focusDay] || [];
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
-  const focusWindow = operationalWindow(focusEvents, focusDay);
+  const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
 
@@ -369,19 +391,21 @@ export default async function Home() {
           </div>
           <div className="daysList compactDays">
             {days.map((day) => {
-              const dayEvents = grouped[day];
-              const summary = daySummary(dayEvents);
+              const dayEvents = grouped[day] || [];
+              const isHiddenDay = dayEvents.length === 0;
+              const summary = isHiddenDay ? null : daySummary(dayEvents);
               const dayHotels = hotelsForDay(day);
               return (
-                <article className={`dayCard ${day === focusDay ? "focus" : ""}`} key={day}>
+                <article className={`dayCard ${day === focusDay ? "focus" : ""} ${isHiddenDay ? "hiddenDay" : ""}`} key={day}>
                   <div className="dayHeader">
                     <div>
                       <time>{day === todayKey ? "Hoje" : collator.format(parseDate(day))}</time>
-                      <strong>{summary.route}</strong>
+                      <strong>{isHiddenDay ? "Dia oculto" : summary?.route}</strong>
                     </div>
-                    <span>{summary.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                    <span>{isHiddenDay ? "sem alocação" : summary?.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
                   </div>
-                  <div className="eventList reduced">
+                  {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
+                  {!isHiddenDay && <div className="eventList reduced">
                     {dayEvents.slice(0, 5).map((event) => (
                       <div className={`eventRow ${eventKind(event)}`} key={event.id}>
                         <div className="timeBlock">
@@ -397,7 +421,7 @@ export default async function Home() {
                       </div>
                     ))}
                     {dayEvents.length > 5 && <div className="moreEvents">+ {dayEvents.length - 5} eventos no dia</div>}
-                  </div>
+                  </div>}
                   {dayHotels.length > 0 && (
                     <div className="embeddedHotels">
                       {dayHotels.map(({ reservation, transports }) => (
@@ -422,19 +446,21 @@ export default async function Home() {
               <summary>Mostrar datas passadas ({pastDays.length})</summary>
               <div className="daysList compactDays pastDays">
                 {pastDays.map((day) => {
-                  const dayEvents = grouped[day];
-                  const summary = daySummary(dayEvents);
+                  const dayEvents = grouped[day] || [];
+                  const isHiddenDay = dayEvents.length === 0;
+                  const summary = isHiddenDay ? null : daySummary(dayEvents);
                   const dayHotels = hotelsForDay(day);
                   return (
-                    <article className="dayCard past" key={day}>
+                    <article className={`dayCard past ${isHiddenDay ? "hiddenDay" : ""}`} key={day}>
                       <div className="dayHeader">
                         <div>
                           <time>{collator.format(parseDate(day))}</time>
-                          <strong>{summary.route}</strong>
+                          <strong>{isHiddenDay ? "Dia oculto" : summary?.route}</strong>
                         </div>
-                        <span>{summary.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                        <span>{isHiddenDay ? "sem alocação" : summary?.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
                       </div>
-                      <div className="eventList reduced">
+                      {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
+                      {!isHiddenDay && <div className="eventList reduced">
                         {dayEvents.slice(0, 5).map((event) => (
                           <div className={`eventRow ${eventKind(event)}`} key={event.id}>
                             <div className="timeBlock">
@@ -450,7 +476,7 @@ export default async function Home() {
                           </div>
                         ))}
                         {dayEvents.length > 5 && <div className="moreEvents">+ {dayEvents.length - 5} eventos no dia</div>}
-                      </div>
+                      </div>}
                       {dayHotels.length > 0 && (
                         <div className="embeddedHotels">
                           {dayHotels.map(({ reservation, transports }) => (

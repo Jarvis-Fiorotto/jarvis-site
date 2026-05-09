@@ -428,3 +428,21 @@ button { cursor: pointer; }
 @media (max-width: 760px) {
   .statusStack { justify-items: start; }
 }
+.dayCard.hiddenDay {
+  border-style: dashed;
+  border-color: rgba(255, 184, 77, .34);
+  background: rgba(255, 184, 77, .045);
+}
+.hiddenDayNote {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--muted);
+  background: rgba(255,255,255,.045);
+  border: 1px dashed rgba(255,255,255,.14);
+  font-size: 14px;
+}
+.dayCard.hiddenDay .dayHeader span,
+.dayCard.hiddenDay .dayHeader strong {
+  color: var(--orange);
+}
