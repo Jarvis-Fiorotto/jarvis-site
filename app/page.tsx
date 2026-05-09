@@ -164,13 +164,6 @@ function hotelsForDay(day: string) {
     }))
     .filter((item) => item.reservation.date_iso === day || item.transports.length);
 }
-function reservationIsUpcoming(reservation: HotelReservation, todayKey: string) {
-  return Boolean(
-    (reservation.date_iso && reservation.date_iso >= todayKey) ||
-    reservation.transports.some((transport) => transport.pickup_date_iso && transport.pickup_date_iso >= todayKey)
-  );
-}
-
 
 function daySummary(dayEvents: RosterEvent[]) {
   const flights = dayEvents.filter((event) => event.type === "FLY");
@@ -221,7 +214,6 @@ export default async function Home() {
   const focusEvents = grouped[focusDay] || [];
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const focusHotels = hotelsForDay(focusDay);
-  const upcomingHotelReservations = hotelReservations.filter((reservation) => reservationIsUpcoming(reservation, todayKey));
   const upcoming = getUpcoming();
 
   return (
@@ -236,7 +228,6 @@ export default async function Home() {
         </div>
         <nav className="navList" aria-label="Módulos">
           <a className="navItem active" href="#escala">Escala</a>
-          <a className="navItem" href="#hoteis">Hotéis</a>
           <a className="navItem disabled" aria-disabled="true">Agenda</a>
           <a className="navItem disabled" aria-disabled="true">Finanças</a>
           <a className="navItem disabled" aria-disabled="true">Viagens</a>
@@ -325,34 +316,6 @@ export default async function Home() {
                 <span>{shortAirport(upcoming)}</span>
               </>
             )}
-          </article>
-
-          <article id="hoteis" className="moduleCard hotelModule">
-            <div className="moduleHeader compact">
-              <div>
-                <p className="eyebrow">Hotéis</p>
-                <h2>Reservas</h2>
-              </div>
-              <span>{upcomingHotelReservations.length} futura(s)</span>
-            </div>
-            <div className="hotelList">
-              {upcomingHotelReservations.length === 0 && <p className="muted">Sem hotéis futuros encontrados.</p>}
-              {upcomingHotelReservations.map((reservation) => (
-                <div className="hotelItem" key={`${reservation.airport}-${reservation.date}`}>
-                  <div className="hotelAirport">{reservation.airport}</div>
-                  <div>
-                    <strong>{reservation.hotel?.name || "Hotel não informado"}</strong>
-                    <span>{reservation.date} · {airportLabel(reservation.airport)}</span>
-                    <span>{reservation.hotel?.address || reservation.city}</span>
-                    {reservation.transports.map((transport) => (
-                      <small key={`${transport.direction}-${transport.pickup_time}`}>
-                        {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}
-                      </small>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
           </article>
 
           {statCards().map((stat) => (
