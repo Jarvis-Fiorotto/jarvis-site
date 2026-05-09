@@ -103,7 +103,7 @@ function airportRoute(from?: string | null, to?: string | null, withCodes = true
 
 const NON_OP_LABELS: Record<string, string> = {
   FR: "Folga regulamentar",
-  FP: "Folga programada",
+  FP: "Folga pedida",
   LFA: "Liberado por fadiga",
   REA: "Reserva acionada",
   QRH: "Treinamento QRH",
