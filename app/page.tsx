@@ -146,6 +146,18 @@ function eachDate(start: string, end: string) {
   return days;
 }
 
+function currentMonthRange(todayKey: string) {
+  const [year, month] = todayKey.split("-").map(Number);
+  const start = `${year}-${String(month).padStart(2, "0")}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const end = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+  return { start, end };
+}
+
+function monthLabel(date: string) {
+  return new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(parseDate(date));
+}
+
 function shortAirport(event: RosterEvent) {
   return airportRoute(event.from, event.to);
 }
@@ -228,20 +240,23 @@ function getUpcoming() {
   return events.find((event) => new Date(event.end_local) >= now) || events[0];
 }
 
-function statCards() {
-  const visibleEvents = events.filter((event) => event.date >= data.period_start && event.date <= data.period_end);
+function statCards(monthStart: string, monthEnd: string) {
+  const visibleEvents = events.filter((event) => event.date >= monthStart && event.date <= monthEnd);
   const eventDays = new Set(visibleEvents.map((event) => event.date));
-  const hiddenDays = eachDate(data.period_start, data.period_end).filter((day) => !eventDays.has(day));
+  const hiddenDays = eachDate(monthStart, monthEnd).filter((day) => !eventDays.has(day));
   const flightEvents = visibleEvents.filter((event) => event.type === "FLY");
-  const hotelEvents = hotelReservations;
+  const hotelEvents = hotelReservations.filter((reservation) =>
+    (reservation.date_iso && reservation.date_iso >= monthStart && reservation.date_iso <= monthEnd) ||
+    reservation.transports.some((transport) => transport.pickup_date_iso && transport.pickup_date_iso >= monthStart && transport.pickup_date_iso <= monthEnd)
+  );
   const airports = new Set(flightEvents.flatMap((event) => [event.from, event.to].filter(Boolean)));
   const blockMinutes = flightEvents.reduce((sum, event) => sum + durationMinutes(event), 0);
-  const period = `${shortDate.format(parseDate(data.period_start))}–${shortDate.format(parseDate(data.period_end))}`;
+  const period = monthLabel(monthStart);
   return [
-    { label: "Voos", value: String(flightEvents.length), hint: `na escala ${period}` },
-    { label: "Hotéis", value: String(hotelEvents.length), hint: `reservas ${period}` },
-    { label: "Dias ocultos", value: String(hiddenDays.length), hint: `sem alocação ${period}` },
-    { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: `total ${period}` }
+    { label: "Voos", value: String(flightEvents.length), hint: `em ${period}` },
+    { label: "Hotéis", value: String(hotelEvents.length), hint: `em ${period}` },
+    { label: "Dias ocultos", value: String(hiddenDays.length), hint: `em ${period}` },
+    { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: `em ${period}` }
   ];
 }
 export default async function Home() {
@@ -249,18 +264,19 @@ export default async function Home() {
   if (!user) redirect("/login");
 
   const grouped = groupByDay(events);
-  const allDays = eachDate(data.period_start, data.period_end);
   const todayKey = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
     year: "numeric",
     month: "2-digit",
     day: "2-digit"
   }).format(new Date());
-  const firstTodayOrFuture = allDays.find((day) => day >= todayKey) || allDays[0];
-  const upcomingDays = allDays.filter((day) => day >= todayKey);
-  const pastDays = allDays.filter((day) => day < todayKey).reverse();
-  const days = upcomingDays.length ? upcomingDays : allDays.slice(-1);
-  const focusDay = firstTodayOrFuture || allDays[0];
+  const { start: monthStart, end: monthEnd } = currentMonthRange(todayKey);
+  const monthDays = eachDate(monthStart, monthEnd);
+  const firstTodayOrFuture = monthDays.find((day) => day >= todayKey) || monthDays[0];
+  const upcomingDays = monthDays.filter((day) => day >= todayKey);
+  const pastDays = monthDays.filter((day) => day < todayKey).reverse();
+  const days = upcomingDays.length ? upcomingDays : monthDays.slice(-1);
+  const focusDay = firstTodayOrFuture || monthDays[0];
   const focusEvents = grouped[focusDay] || [];
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
@@ -298,12 +314,12 @@ export default async function Home() {
             <p className="eyebrow">Escala Azul · Danilo Fiorotto</p>
             <h1>Próximas viagens</h1>
             <p className="muted">
-              Mostrando primeiro o que ainda vem pela frente. Histórico fica escondido para não poluir.
+              Mostrando o mês atual fechado. Dias passados ficam escondidos para não poluir.
             </p>
           </div>
           <div className="statusStack">
             <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
-            <div className="periodChip">Escala {shortDate.format(parseDate(data.period_start))}–{shortDate.format(parseDate(data.period_end))}</div>
+            <div className="periodChip">{monthLabel(monthStart)} · {shortDate.format(parseDate(monthStart))}–{shortDate.format(parseDate(monthEnd))}</div>
           </div>
         </header>
 
@@ -372,7 +388,7 @@ export default async function Home() {
             )}
           </article>
 
-          {statCards().map((stat) => (
+          {statCards(monthStart, monthEnd).map((stat) => (
             <article className="moduleCard miniStat" key={stat.label}>
               <span>{stat.label}</span>
               <strong>{stat.value}</strong>
@@ -387,7 +403,7 @@ export default async function Home() {
               <p className="eyebrow">Linha do tempo</p>
               <h2>Próximos dias</h2>
             </div>
-            <span className="muted">Datas passadas ficam recolhidas no fim.</span>
+            <span className="muted">Mês atual fechado; datas passadas ficam recolhidas.</span>
           </div>
           <div className="daysList compactDays">
             {days.map((day) => {
