@@ -212,6 +212,10 @@ button { cursor: pointer; }
 .eventRow.hotel::before { background: var(--orange); }
 .eventRow.checkin::before { background: var(--green); }
 .eventRow.checkout::before { background: var(--red); }
+.eventRow.off::before { background: var(--green); }
+.eventRow.standby::before { background: var(--orange); }
+.eventRow.training::before { background: var(--blue); }
+.eventRow.leave::before { background: var(--red); }
 .timeBlock { display: grid; align-content: start; gap: 4px; }
 .timeBlock strong { font-size: 20px; }
 .timeBlock span { color: var(--muted); }

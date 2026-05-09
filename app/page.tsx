@@ -101,15 +101,39 @@ function airportRoute(from?: string | null, to?: string | null, withCodes = true
   return `${label(from)} → ${label(to)}`;
 }
 
+const NON_OP_LABELS: Record<string, string> = {
+  FR: "Folga regulamentar",
+  FP: "Folga programada",
+  LFA: "Liberado por fadiga",
+  REA: "Reserva acionada",
+  QRH: "Treinamento QRH",
+  AVT: "Avaliação técnica"
+};
+
 function eventKind(event: RosterEvent) {
   if (event.type === "FLY") return "flight";
   if (event.type === "HOTEL") return "hotel";
   if (event.type === "CHECK") return event.subtype === "IN" ? "checkin" : "checkout";
-  if (["OFF", "REST", "DAY_OFF"].includes(event.type)) return "off";
+  if (["OFF", "REST", "DAY_OFF"].includes(event.type) || event.subtype === "OFF") return "off";
+  if (event.subtype === "STANDBY") return "standby";
+  if (event.subtype === "GROUND") return "training";
+  if (event.subtype === "LEAVE") return "leave";
   return "other";
 }
 
+function nonOperationalLabel(event: RosterEvent) {
+  if (NON_OP_LABELS[event.label]) return NON_OP_LABELS[event.label];
+  if (event.label?.startsWith("SB")) return "Sobreaviso";
+  if (event.label?.startsWith("RHC")) return "Reserva Hotcrew";
+  if (event.subtype === "STANDBY") return event.details || "Reserva / sobreaviso";
+  if (event.subtype === "GROUND") return event.details || "Treinamento / atividade";
+  if (event.subtype === "LEAVE") return event.details || "Liberação";
+  if (event.subtype === "OFF") return event.details || "Folga";
+  return event.details || event.type;
+}
+
 function kindLabel(event: RosterEvent) {
+  if (event.type === "NON_OP") return nonOperationalLabel(event);
   const kind = eventKind(event);
   const labels: Record<string, string> = {
     flight: "Voo",
@@ -117,6 +141,9 @@ function kindLabel(event: RosterEvent) {
     checkin: "Apresentação",
     checkout: "Release",
     off: "Folga",
+    standby: "Reserva / sobreaviso",
+    training: "Treinamento / atividade",
+    leave: "Liberação",
     other: event.type
   };
   return labels[kind];
