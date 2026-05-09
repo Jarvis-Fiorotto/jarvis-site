@@ -321,6 +321,43 @@ function transportLabel(direction: string) {
   return direction === "to_hotel" ? "Busca no aeroporto" : "Busca no hotel";
 }
 
+function timeToMinutes(time?: string | null) {
+  const match = String(time || "").match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return null;
+  return Number(match[1]) * 60 + Number(match[2]);
+}
+
+function minutesToTime(minutes: number) {
+  const normalized = ((minutes % 1440) + 1440) % 1440;
+  const h = Math.floor(normalized / 60);
+  const m = normalized % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function transitMinutes(transit?: string | null) {
+  const match = String(transit || "").match(/(\d+)/);
+  return match ? Number(match[1]) : 0;
+}
+
+function arrivalAtHotel(transport?: HotelTransport) {
+  const pickup = timeToMinutes(transport?.pickup_time);
+  if (pickup === null) return null;
+  return minutesToTime(pickup + transitMinutes(transport?.transit_time));
+}
+
+function overnightWindow(reservation: HotelReservation) {
+  const toHotel = reservation.transports.find((transport) => transport.direction === "to_hotel");
+  const toAirport = reservation.transports.find((transport) => transport.direction === "to_airport");
+  const arrival = arrivalAtHotel(toHotel) || toHotel?.pickup_time || null;
+  const pickup = toAirport?.pickup_time || null;
+  if (!arrival && !pickup) return null;
+  return { arrival, pickup, pickupDate: toAirport?.pickup_date_iso || null };
+}
+
+function displayEvents(dayEvents: RosterEvent[]) {
+  return dayEvents.filter((event) => event.type !== "HOTEL");
+}
+
 function hotelsForDay(day: string) {
   return hotelReservations
     .map((reservation) => ({
@@ -484,6 +521,11 @@ export default async function Home() {
                   <div className="dayHotelItem" key={`${reservation.airport}-${reservation.date}-${reservation.hotel?.name}`}>
                     <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
                     <span>{reservation.hotel?.address || reservation.city}</span>
+                    {overnightWindow(reservation) && (
+                      <small className="overnightWindow">
+                        Pernoite: chegada aprox. {overnightWindow(reservation)?.arrival || "—"} → van busca {overnightWindow(reservation)?.pickup || "—"}
+                      </small>
+                    )}
                     {transports.map((transport) => (
                       <small key={`${transport.direction}-${transport.pickup_time}`}>
                         {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}
@@ -495,7 +537,7 @@ export default async function Home() {
             )}
 
             <div className="compactEvents">
-              {focusEvents.map((event) => (
+              {displayEvents(focusEvents).map((event) => (
                 <div className={`compactEvent ${eventKind(event)}`} key={event.id}>
                   <time>{event.start_time}</time>
                   <div>
@@ -555,7 +597,7 @@ export default async function Home() {
                   </div>
                   {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
                   {!isHiddenDay && <div className="eventList reduced">
-                    {dayEvents.slice(0, 5).map((event) => (
+                    {displayEvents(dayEvents).slice(0, 5).map((event) => (
                       <div className={`eventRow ${eventKind(event)}`} key={event.id}>
                         <div className="timeBlock">
                           <strong>{event.start_time}</strong>
@@ -570,13 +612,18 @@ export default async function Home() {
                         </div>
                       </div>
                     ))}
-                    {dayEvents.length > 5 && <div className="moreEvents">+ {dayEvents.length - 5} eventos no dia</div>}
+                    {displayEvents(dayEvents).length > 5 && <div className="moreEvents">+ {displayEvents(dayEvents).length - 5} eventos no dia</div>}
                   </div>}
                   {dayHotels.length > 0 && (
                     <div className="embeddedHotels">
                       {dayHotels.map(({ reservation, transports }) => (
                         <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
                           <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
+                          {overnightWindow(reservation) && (
+                            <span className="overnightWindow">
+                              Pernoite: chegada aprox. {overnightWindow(reservation)?.arrival || "—"} → van busca {overnightWindow(reservation)?.pickup || "—"}
+                            </span>
+                          )}
                           {transports.map((transport) => (
                             <span key={`${transport.direction}-${transport.pickup_time}`}>
                               {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}
@@ -611,7 +658,7 @@ export default async function Home() {
                       </div>
                       {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
                       {!isHiddenDay && <div className="eventList reduced">
-                        {dayEvents.slice(0, 5).map((event) => (
+                        {displayEvents(dayEvents).slice(0, 5).map((event) => (
                           <div className={`eventRow ${eventKind(event)}`} key={event.id}>
                             <div className="timeBlock">
                               <strong>{event.start_time}</strong>
@@ -626,7 +673,7 @@ export default async function Home() {
                             </div>
                           </div>
                         ))}
-                        {dayEvents.length > 5 && <div className="moreEvents">+ {dayEvents.length - 5} eventos no dia</div>}
+                        {displayEvents(dayEvents).length > 5 && <div className="moreEvents">+ {displayEvents(dayEvents).length - 5} eventos no dia</div>}
                       </div>}
                       {dayHotels.length > 0 && (
                         <div className="embeddedHotels">

@@ -489,3 +489,7 @@ button { cursor: pointer; }
   .flightStatus { gap: 5px; }
   .flightStatus a { width: max-content; }
 }
+.overnightWindow {
+  color: var(--text) !important;
+  font-weight: 900;
+}
