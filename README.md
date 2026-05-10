@@ -12,7 +12,7 @@ Dashboard privado para visualizar a escala de voo do Danilo de forma clara para 
 
 ## Funcionalidades
 
-- Login básico por email e senha.
+- Login básico por usuário e senha.
 - Sessão HTTP-only assinada.
 - Dashboard da escala importada do CAE/Azul.
 - Resumo do próximo compromisso, estatísticas e linha do tempo por dia.
@@ -26,6 +26,6 @@ A escala atual está embutida em `app/data/roster-latest.json`, gerada a partir 
 ## Segurança
 
 - Senhas não ficam no código.
-- Usuários e hashes ficam em `SCHEDULE_USERS_JSON`.
+- Usuários e hashes ficam em `SCHEDULE_USERS_JSON`, no formato `[{"username":"Danilo","name":"Danilo","passwordHash":"..."}]`.
 - Assinatura de sessão usa `AUTH_SECRET`.
 - Secrets são configurados no Vercel/GitHub Actions.
