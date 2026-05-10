@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-10T11:31:13.245Z",
+  "updated_at": "2026-05-10T15:33:33.932Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,7 +13,7 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 47
+    "queries": 52
   },
   "last_run": {
     "queries": 5,
@@ -234,28 +234,28 @@
         "start_time": "11:35",
         "end_time": "12:35"
       },
-      "updated_at": "2026-05-10T11:31:13.245Z",
+      "updated_at": "2026-05-10T15:33:33.932Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2753",
       "ident_icao": "AZU2753",
       "ident_iata": "AD2753",
       "fa_flight_id": "AZU2753-1778221554-airline-814p",
-      "status": "Scheduled",
-      "normalized_status": "scheduled",
+      "status": "Arrived / Gate Arrival",
+      "normalized_status": "landed",
       "origin": "CWB",
       "destination": "VCP",
       "scheduled_out": "2026-05-10T14:35:00Z",
       "estimated_out": "2026-05-10T14:35:00Z",
-      "actual_out": null,
+      "actual_out": "2026-05-10T14:27:00Z",
       "scheduled_off": "2026-05-10T14:45:00Z",
-      "estimated_off": "2026-05-10T14:45:00Z",
-      "actual_off": null,
+      "estimated_off": "2026-05-10T14:37:28Z",
+      "actual_off": "2026-05-10T14:37:28Z",
       "scheduled_on": "2026-05-10T15:25:00Z",
-      "estimated_on": "2026-05-10T15:25:00Z",
-      "actual_on": null,
+      "estimated_on": "2026-05-10T15:18:03Z",
+      "actual_on": "2026-05-10T15:18:03Z",
       "scheduled_in": "2026-05-10T15:35:00Z",
-      "estimated_in": "2026-05-10T15:35:00Z",
-      "actual_in": null,
+      "estimated_in": "2026-05-10T15:28:00Z",
+      "actual_in": "2026-05-10T15:27:00Z",
       "terminal_origin": null,
       "terminal_destination": null,
       "gate_origin": "10",
@@ -273,7 +273,7 @@
         "start_time": "13:55",
         "end_time": "15:25"
       },
-      "updated_at": "2026-05-10T11:31:13.245Z",
+      "updated_at": "2026-05-10T15:33:33.932Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4727",
       "ident_icao": "AZU4727",
@@ -289,11 +289,11 @@
       "scheduled_off": "2026-05-10T17:05:00Z",
       "estimated_off": "2026-05-10T17:05:00Z",
       "actual_off": null,
-      "scheduled_on": "2026-05-10T18:15:00Z",
-      "estimated_on": "2026-05-10T18:15:00Z",
+      "scheduled_on": "2026-05-10T18:19:00Z",
+      "estimated_on": "2026-05-10T18:19:00Z",
       "actual_on": null,
       "scheduled_in": "2026-05-10T18:25:00Z",
-      "estimated_in": "2026-05-10T18:25:00Z",
+      "estimated_in": "2026-05-10T18:29:00Z",
       "actual_in": null,
       "terminal_origin": null,
       "terminal_destination": null,
@@ -312,7 +312,7 @@
         "start_time": "16:05",
         "end_time": "17:25"
       },
-      "updated_at": "2026-05-10T11:31:13.245Z",
+      "updated_at": "2026-05-10T15:33:33.932Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4175",
       "ident_icao": "AZU4175",
@@ -351,7 +351,7 @@
         "start_time": "19:15",
         "end_time": "20:15"
       },
-      "updated_at": "2026-05-10T11:31:13.245Z",
+      "updated_at": "2026-05-10T15:33:33.932Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4546",
       "ident_icao": "AZU4546",
@@ -390,7 +390,7 @@
         "start_time": "20:55",
         "end_time": "21:55"
       },
-      "updated_at": "2026-05-10T11:31:13.245Z",
+      "updated_at": "2026-05-10T15:33:33.932Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2966",
       "ident_icao": "AZU2966",
@@ -414,7 +414,7 @@
       "actual_in": null,
       "terminal_origin": null,
       "terminal_destination": null,
-      "gate_origin": null,
+      "gate_origin": "11",
       "gate_destination": null
     }
   }
