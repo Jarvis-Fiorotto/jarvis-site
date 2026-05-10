@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-10T08:23:37.413Z",
+  "updated_at": "2026-05-10T11:31:13.245Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,7 +13,7 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 42
+    "queries": 47
   },
   "last_run": {
     "queries": 5,
@@ -234,7 +234,7 @@
         "start_time": "11:35",
         "end_time": "12:35"
       },
-      "updated_at": "2026-05-10T08:23:37.413Z",
+      "updated_at": "2026-05-10T11:31:13.245Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2753",
       "ident_icao": "AZU2753",
@@ -273,7 +273,7 @@
         "start_time": "13:55",
         "end_time": "15:25"
       },
-      "updated_at": "2026-05-10T08:23:37.413Z",
+      "updated_at": "2026-05-10T11:31:13.245Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4727",
       "ident_icao": "AZU4727",
@@ -312,7 +312,7 @@
         "start_time": "16:05",
         "end_time": "17:25"
       },
-      "updated_at": "2026-05-10T08:23:37.413Z",
+      "updated_at": "2026-05-10T11:31:13.245Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4175",
       "ident_icao": "AZU4175",
@@ -351,7 +351,7 @@
         "start_time": "19:15",
         "end_time": "20:15"
       },
-      "updated_at": "2026-05-10T08:23:37.413Z",
+      "updated_at": "2026-05-10T11:31:13.245Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4546",
       "ident_icao": "AZU4546",
@@ -390,7 +390,7 @@
         "start_time": "20:55",
         "end_time": "21:55"
       },
-      "updated_at": "2026-05-10T08:23:37.413Z",
+      "updated_at": "2026-05-10T11:31:13.245Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2966",
       "ident_icao": "AZU2966",
