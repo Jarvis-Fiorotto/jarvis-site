@@ -1,6 +1,7 @@
 import roster from "./data/roster-latest.json";
 import hotels from "./data/hotels-latest.json";
 import flightStatusJson from "./data/flight-status-latest.json";
+import flightBriefingJson from "./data/flight-briefing-latest.json";
 import { currentUser } from "../lib/auth";
 import { redirect } from "next/navigation";
 
@@ -89,9 +90,42 @@ type FlightStatusData = {
   flights: Record<string, FlightStatus>;
 };
 
+type WeatherReport = {
+  status: string;
+  raw?: string | null;
+  reason?: string | null;
+};
+
+type BriefingAirport = {
+  iata?: string | null;
+  icao?: string | null;
+  metar?: WeatherReport | null;
+  taf?: WeatherReport | null;
+  notams?: { status?: string | null; items?: string[] } | null;
+};
+
+type FlightBriefing = {
+  key: string;
+  updated_at?: string | null;
+  source?: string | null;
+  status?: string | null;
+  flight?: { flight_number?: string | null; from?: string | null; to?: string | null; departure_local?: string | null } | null;
+  airports?: { origin?: BriefingAirport | null; destination?: BriefingAirport | null; alternates?: BriefingAirport[] } | null;
+  lido?: { status?: string | null; notes?: string | null } | null;
+  analysis?: { risk?: string | null; summary?: string | null } | null;
+};
+
+type FlightBriefingData = {
+  updated_at?: string | null;
+  provider?: string | null;
+  status?: string | null;
+  briefings: Record<string, FlightBriefing>;
+};
+
 const data = roster as RosterData;
 const hotelData = hotels as HotelData;
 const flightStatusData = flightStatusJson as FlightStatusData;
+const flightBriefingData = flightBriefingJson as FlightBriefingData;
 const hotelReservations = hotelData.reservations || [];
 const events = data.events.filter((event) => !event.canceled);
 const collator = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
@@ -156,10 +190,25 @@ function flightStatusFor(event: RosterEvent) {
   return flightStatusData.flights?.[flightStatusKey(event)] || null;
 }
 
+function flightBriefingFor(event: RosterEvent) {
+  return flightBriefingData.briefings?.[flightStatusKey(event)] || null;
+}
+
 function timeFromIso(iso?: string | null) {
   if (!iso) return null;
   return new Intl.DateTimeFormat("pt-BR", {
     timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(iso));
+}
+
+function dateTimeFromIso(iso?: string | null) {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
     hour: "2-digit",
     minute: "2-digit"
   }).format(new Date(iso));
@@ -203,6 +252,119 @@ function FlightLiveInfo({ event }: { event: RosterEvent }) {
       <a href={flightAwareUrl(event, status)} target="_blank" rel="noreferrer">FlightAware</a>
       <a href={flightRadarUrl(event)} target="_blank" rel="noreferrer">Flightradar24</a>
     </div>
+  );
+}
+
+function rawReport(report?: WeatherReport | null) {
+  if (!report) return "Aguardando consulta";
+  if (report.raw) return report.raw;
+  if (report.status === "not_found") return "Não encontrado no provider";
+  if (report.status === "error") return `Erro: ${report.reason || "provider indisponível"}`;
+  return "Indisponível";
+}
+
+function AirportBriefingCard({ title, airport }: { title: string; airport?: BriefingAirport | null }) {
+  return (
+    <div className="briefingAirport">
+      <div>
+        <strong>{title}</strong>
+        <span>{airport?.iata || "—"}{airport?.icao ? ` / ${airport.icao}` : ""}</span>
+      </div>
+      <dl>
+        <dt>METAR</dt>
+        <dd>{rawReport(airport?.metar)}</dd>
+        <dt>TAF</dt>
+        <dd>{rawReport(airport?.taf)}</dd>
+        <dt>NOTAM</dt>
+        <dd>{airport?.notams?.items?.length ? airport.notams.items.join(" · ") : "Aguardando Lido / fonte oficial"}</dd>
+      </dl>
+    </div>
+  );
+}
+
+function PreflightBriefing({ event }: { event: RosterEvent }) {
+  const briefing = flightBriefingFor(event);
+  if (!briefing) {
+    return (
+      <article id="briefing" className="moduleCard briefingModule normal">
+        <div className="moduleHeader">
+          <div>
+            <p className="eyebrow">Briefing operacional</p>
+            <h2>{cleanFlightLabel(event.label)} · {event.from} → {event.to}</h2>
+          </div>
+          <span>T-60 min</span>
+        </div>
+        <div className="briefingMeta">
+          <span>Aguardando janela de atualização</span>
+          <span>Meteo: AviationWeather.gov</span>
+          <span>Lido: pendente</span>
+        </div>
+        <div className="jarvisAnalysis">
+          <strong>Análise JARVIS</strong>
+          <p>O briefing automático será gerado cerca de uma hora antes do voo. METAR/TAF entram pelo AviationWeather.gov; alternados e NOTAMs oficiais dependem da extração segura do Lido.</p>
+        </div>
+      </article>
+    );
+  }
+  const alternates = briefing.airports?.alternates || [];
+  return (
+    <article id="briefing" className={`moduleCard briefingModule ${briefing.analysis?.risk === "atenção" ? "attention" : "normal"}`}>
+      <div className="moduleHeader">
+        <div>
+          <p className="eyebrow">Briefing operacional</p>
+          <h2>{cleanFlightLabel(event.label)} · {event.from} → {event.to}</h2>
+        </div>
+        <span>{dateTimeFromIso(briefing.updated_at)}</span>
+      </div>
+      <div className="briefingMeta">
+        <span>Fonte meteo: {flightBriefingData.provider || "AviationWeather"}</span>
+        <span>Lido: {briefing.lido?.status === "pending_login_automation" ? "pendente" : briefing.lido?.status || "—"}</span>
+        <span>Atualiza na janela T-60 min</span>
+      </div>
+      <div className="briefingAirports">
+        <AirportBriefingCard title="Origem" airport={briefing.airports?.origin} />
+        <AirportBriefingCard title="Destino" airport={briefing.airports?.destination} />
+        {alternates.length > 0
+          ? alternates.map((airport, index) => <AirportBriefingCard title={`Alternado ${index + 1}`} airport={airport} key={`${airport.icao}-${index}`} />)
+          : <div className="briefingAirport pending"><strong>Alternados</strong><span>Aguardando extração segura do Lido/OFP.</span></div>}
+      </div>
+      <div className="jarvisAnalysis">
+        <strong>Análise JARVIS</strong>
+        <p>{briefing.analysis?.summary || "Aguardando dados suficientes para análise."}</p>
+      </div>
+    </article>
+  );
+}
+
+function ManualPreflightBriefing({ briefing }: { briefing: FlightBriefing }) {
+  const flight = briefing.flight;
+  const alternates = briefing.airports?.alternates || [];
+  return (
+    <article id="briefing" className={`moduleCard briefingModule ${briefing.analysis?.risk === "atenção" ? "attention" : "normal"}`}>
+      <div className="moduleHeader">
+        <div>
+          <p className="eyebrow">Briefing operacional · teste manual</p>
+          <h2>{flight?.flight_number || "Voo"} · {flight?.from || "—"} → {flight?.to || "—"}</h2>
+        </div>
+        <span>{dateTimeFromIso(briefing.updated_at)}</span>
+      </div>
+      <div className="briefingMeta">
+        <span>Fonte meteo: {flightBriefingData.provider || "AviationWeather"}</span>
+        <span>Lido: {briefing.lido?.status === "pending_login_automation" ? "pendente" : briefing.lido?.status || "—"}</span>
+        <span>Manual test</span>
+      </div>
+      <div className="briefingAirports">
+        <AirportBriefingCard title="Origem" airport={briefing.airports?.origin} />
+        <AirportBriefingCard title="Destino" airport={briefing.airports?.destination} />
+        {alternates.length > 0
+          ? alternates.map((airport, index) => <AirportBriefingCard title={`Alternado ${index + 1}`} airport={airport} key={`${airport.icao}-${index}`} />)
+          : <div className="briefingAirport pending"><strong>Alternados</strong><span>Aguardando extração segura do Lido/OFP.</span></div>}
+      </div>
+      <div className="jarvisAnalysis">
+        <strong>Análise JARVIS</strong>
+        <p>{briefing.analysis?.summary || "Aguardando dados suficientes para análise."}</p>
+      </div>
+    </article>
   );
 }
 
@@ -469,6 +631,19 @@ function statCards(monthStart: string, monthEnd: string) {
     { label: "Tempo em voo", value: formatDuration(blockMinutes), hint: `em ${period}` }
   ];
 }
+
+function latestBriefedFlight() {
+  const flightEvents = events.filter((event) => event.type === "FLY" && flightBriefingFor(event));
+  return flightEvents
+    .sort((a, b) => new Date(a.start_local).getTime() - new Date(b.start_local).getTime())
+    .find((event) => new Date(event.end_local) >= new Date()) || flightEvents.at(-1) || null;
+}
+
+function latestManualBriefing() {
+  return Object.values(flightBriefingData.briefings || {})
+    .filter((briefing) => briefing.key?.startsWith("manual|"))
+    .sort((a, b) => new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime())[0] || null;
+}
 export default async function Home() {
   const user = await currentUser();
   if (!user) redirect("/login");
@@ -492,6 +667,8 @@ export default async function Home() {
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
+  const manualBriefing = latestManualBriefing();
+  const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
   return (
     <main className="appShell">
@@ -505,6 +682,7 @@ export default async function Home() {
         </div>
         <nav className="navList" aria-label="Módulos">
           <a className="navItem active" href="#escala">Escala</a>
+          <a className="navItem" href="#briefing">Briefing</a>
           <a className="navItem disabled" aria-disabled="true">Agenda</a>
           <a className="navItem disabled" aria-disabled="true">Finanças</a>
           <a className="navItem disabled" aria-disabled="true">Viagens</a>
@@ -611,6 +789,8 @@ export default async function Home() {
               <small>{stat.hint}</small>
             </article>
           ))}
+
+          {manualBriefing ? <ManualPreflightBriefing briefing={manualBriefing} /> : briefingFlight && <PreflightBriefing event={briefingFlight} />}
         </section>
 
         <section className="timeline compactTimeline">

@@ -332,6 +332,54 @@ button { cursor: pointer; }
 .miniStat { min-height: 132px; display: grid; align-content: center; gap: 5px; }
 .miniStat span, .miniStat small { color: var(--muted); }
 .miniStat strong { font-size: 30px; letter-spacing: -.04em; }
+.briefingModule {
+  grid-column: 2 / -1;
+  display: grid;
+  gap: 16px;
+  border-color: rgba(62,231,255,.24);
+}
+.briefingModule.attention { border-color: rgba(255,184,77,.46); background: rgba(255,184,77,.07); }
+.briefingMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.briefingMeta span {
+  display: inline-flex;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--muted);
+  background: rgba(255,255,255,.045);
+  font-size: 12px;
+  font-weight: 800;
+}
+.briefingAirports {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.briefingAirport {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,.055);
+  min-width: 0;
+}
+.briefingAirport > div { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.briefingAirport span { color: var(--muted); }
+.briefingAirport dl { margin: 0; display: grid; gap: 7px; }
+.briefingAirport dt { color: var(--cyan); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; font-weight: 900; }
+.briefingAirport dd { margin: 0; color: #dce8f7; font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; }
+.briefingAirport.pending { display: grid; align-content: center; gap: 4px; border-style: dashed; color: var(--muted); }
+.jarvisAnalysis {
+  border: 1px solid rgba(62,231,255,.18);
+  border-radius: 18px;
+  padding: 15px;
+  background: rgba(62,231,255,.07);
+}
+.jarvisAnalysis strong { color: var(--cyan); }
+.jarvisAnalysis p { margin: 8px 0 0; color: #dce8f7; line-height: 1.5; }
 .compactTimeline { margin-top: 30px; }
 .compactDays { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .dayCard.focus { border-color: rgba(62,231,255,.45); box-shadow: 0 0 0 1px rgba(62,231,255,.15), 0 18px 60px rgba(0,0,0,.22); }
@@ -346,6 +394,7 @@ button { cursor: pointer; }
   .sidebarFooter { margin-top: 0; margin-left: auto; }
   .moduleGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .scheduleModule { grid-column: 1 / -1; }
+  .briefingModule { grid-column: 1 / -1; }
 }
 
 @media (max-width: 760px) {
@@ -353,6 +402,7 @@ button { cursor: pointer; }
   .sidebar { padding: 16px; align-items: start; flex-direction: column; }
   .sidebarFooter { margin-left: 0; }
   .dashboardHeader, .todayPanel, .moduleGrid, .compactDays { grid-template-columns: 1fr; display: grid; }
+  .briefingAirports { grid-template-columns: 1fr; }
   .compactEvent { grid-template-columns: 54px 1fr; }
   .compactEvent small { grid-column: 2; }
 }
