@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-10T00:08:33.454Z",
+  "updated_at": "2026-05-10T08:23:37.413Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,18 +13,17 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 37
+    "queries": 42
   },
   "last_run": {
-    "queries": 6,
-    "candidates": 8,
+    "queries": 5,
+    "candidates": 5,
     "logs": [
-      "updated 2026-05-09|AD2915|POA|CWB|14:25",
-      "updated 2026-05-09|AD4023|CWB|GIG|17:25",
-      "updated 2026-05-09|AD4024|GIG|CWB|19:40",
       "updated 2026-05-10|AD2753|CWB|VCP|11:35",
       "updated 2026-05-10|AD4727|VCP|CAC|13:55",
-      "updated 2026-05-10|AD4175|CAC|VCP|16:05"
+      "updated 2026-05-10|AD4175|CAC|VCP|16:05",
+      "updated 2026-05-10|AD4546|VCP|CWB|19:15",
+      "updated 2026-05-10|AD2966|CWB|VCP|20:55"
     ]
   },
   "flights": {
@@ -235,7 +234,7 @@
         "start_time": "11:35",
         "end_time": "12:35"
       },
-      "updated_at": "2026-05-10T00:08:33.454Z",
+      "updated_at": "2026-05-10T08:23:37.413Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2753",
       "ident_icao": "AZU2753",
@@ -259,7 +258,7 @@
       "actual_in": null,
       "terminal_origin": null,
       "terminal_destination": null,
-      "gate_origin": null,
+      "gate_origin": "10",
       "gate_destination": null
     },
     "2026-05-10|AD4727|VCP|CAC|13:55": {
@@ -274,7 +273,7 @@
         "start_time": "13:55",
         "end_time": "15:25"
       },
-      "updated_at": "2026-05-10T00:08:33.454Z",
+      "updated_at": "2026-05-10T08:23:37.413Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4727",
       "ident_icao": "AZU4727",
@@ -313,7 +312,7 @@
         "start_time": "16:05",
         "end_time": "17:25"
       },
-      "updated_at": "2026-05-10T00:08:33.454Z",
+      "updated_at": "2026-05-10T08:23:37.413Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4175",
       "ident_icao": "AZU4175",
@@ -352,7 +351,7 @@
         "start_time": "19:15",
         "end_time": "20:15"
       },
-      "updated_at": "2026-05-09T18:11:13.977Z",
+      "updated_at": "2026-05-10T08:23:37.413Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4546",
       "ident_icao": "AZU4546",
@@ -391,7 +390,7 @@
         "start_time": "20:55",
         "end_time": "21:55"
       },
-      "updated_at": "2026-05-09T18:11:13.977Z",
+      "updated_at": "2026-05-10T08:23:37.413Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2966",
       "ident_icao": "AZU2966",

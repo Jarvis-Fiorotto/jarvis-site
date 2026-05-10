@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-10T02:23:18.952Z",
+  "updated_at": "2026-05-10T08:24:07.124Z",
   "provider": "aviationweather.gov",
   "status": "partial_until_lido_enabled",
   "limits": {
@@ -7,14 +7,13 @@
     "lookbackMinutes": 30,
     "maxFlightsPerRun": 4,
     "refreshMinutes": 60,
-    "requestTimeoutMs": 12000
+    "requestTimeoutMs": 12000,
+    "liveWeatherMaxAgeMinutes": 90
   },
   "last_run": {
-    "queries": 4,
-    "candidates": 1,
-    "logs": [
-      "updated manual|AD2752|CNF|SSA"
-    ]
+    "queries": 0,
+    "candidates": 0,
+    "logs": []
   },
   "briefings": {
     "manual|AD2752|CNF|SSA": {
