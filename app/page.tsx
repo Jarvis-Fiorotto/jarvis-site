@@ -2,7 +2,7 @@ import rosterFallback from "./data/roster-latest.json";
 import hotelsFallback from "./data/hotels-latest.json";
 import flightStatusFallback from "./data/flight-status-latest.json";
 import flightBriefingFallback from "./data/flight-briefing-latest.json";
-import { currentUser } from "../lib/auth";
+import { currentUser, hasModule, isAdmin } from "../lib/auth";
 import { redirect } from "next/navigation";
 import { loadRuntimeDocument } from "../lib/runtime-data";
 
@@ -684,6 +684,12 @@ export default async function Home() {
   const user = await currentUser();
   if (!user) redirect("/login");
 
+  const canViewBriefing = hasModule(user, "briefing");
+  const canViewAgenda = hasModule(user, "agenda");
+  const canViewFinances = hasModule(user, "financas");
+  const canViewTravel = hasModule(user, "viagens");
+  const canViewAdmin = isAdmin(user);
+
   await hydrateRuntimeData();
 
   const grouped = groupByDay(events);
@@ -720,10 +726,11 @@ export default async function Home() {
         </div>
         <nav className="navList" aria-label="Módulos">
           <a className="navItem active" href="#escala">Escala</a>
-          <a className="navItem" href="#briefing">Briefing</a>
-          <a className="navItem disabled" aria-disabled="true">Agenda</a>
-          <a className="navItem disabled" aria-disabled="true">Finanças</a>
-          <a className="navItem disabled" aria-disabled="true">Viagens</a>
+          {canViewBriefing && <a className="navItem" href="#briefing">Briefing</a>}
+          {canViewAgenda && <a className="navItem" href="#agenda">Agenda</a>}
+          {canViewFinances && <a className="navItem disabled" aria-disabled="true">Finanças</a>}
+          {canViewTravel && <a className="navItem disabled" aria-disabled="true">Viagens</a>}
+          {canViewAdmin && <a className="navItem" href="/admin">Admin</a>}
         </nav>
         <div className="sidebarFooter">
           <span>Logado como</span>
@@ -809,17 +816,21 @@ export default async function Home() {
             </div>
           </article>
 
-          <article className="moduleCard nextModule">
-            <p className="eyebrow">Próximo compromisso</p>
-            <h2>{upcoming ? upcoming.label : "Sem eventos"}</h2>
-            {upcoming && (
-              <>
-                <p>{longDate.format(parseDate(upcoming.date))}</p>
-                <strong>{upcoming.time}</strong>
-                <span>{upcoming.detail}</span>
-              </>
-            )}
-          </article>
+          {canViewAgenda && (
+            <article id="agenda" className="moduleCard nextModule">
+              <p className="eyebrow">Agenda</p>
+              <h2>{upcoming ? upcoming.label : "Sem compromissos"}</h2>
+              {upcoming ? (
+                <>
+                  <p>{longDate.format(parseDate(upcoming.date))}</p>
+                  <strong>{upcoming.time}</strong>
+                  <span>{upcoming.detail}</span>
+                </>
+              ) : (
+                <span className="muted">Nenhum compromisso publicado no período.</span>
+              )}
+            </article>
+          )}
 
           {statCards(monthStart, monthEnd).map((stat) => (
             <article className="moduleCard miniStat" key={stat.label}>
@@ -829,7 +840,8 @@ export default async function Home() {
             </article>
           ))}
 
-          {manualBriefing ? <ManualPreflightBriefing briefing={manualBriefing} /> : briefingFlight && <PreflightBriefing event={briefingFlight} />}
+          {canViewBriefing && (manualBriefing ? <ManualPreflightBriefing briefing={manualBriefing} /> : briefingFlight && <PreflightBriefing event={briefingFlight} />)}
+
         </section>
 
         <section className="timeline compactTimeline">

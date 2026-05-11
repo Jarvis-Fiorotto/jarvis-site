@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "../../lib/auth";
+import { currentUser, isAdmin } from "../../lib/auth";
 import { isSupabaseRuntimeConfigured, listRuntimeSyncRuns } from "../../lib/runtime-data";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +28,7 @@ function formatDate(iso?: string | null) {
 export default async function AdminPage() {
   const user = await currentUser();
   if (!user) redirect("/login");
+  if (!isAdmin(user)) redirect("/");
 
   const configured = isSupabaseRuntimeConfigured();
   const syncRuns = await listRuntimeSyncRuns(30);
