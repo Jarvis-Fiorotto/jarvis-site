@@ -475,6 +475,19 @@ function monthLabel(date: string) {
   return new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(parseDate(date));
 }
 
+function runtimeUpdatedLabel(value?: string | null) {
+  if (!value) return "Atualização n/d";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Atualização n/d";
+  return `Atualizado: ${new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date)}`;
+}
+
 function shortAirport(event: RosterEvent) {
   return airportRoute(event.from, event.to);
 }
@@ -732,7 +745,7 @@ export default async function Home() {
           </div>
           <div className="statusStack">
             <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
-            <div className="statusChip">Dados: {dataSourceLabel}</div>
+            <div className="statusChip">Dados: {dataSourceLabel} · {runtimeUpdatedLabel(dataUpdatedAt)}</div>
             <div className="periodChip">{monthLabel(monthStart)} · {shortDate.format(parseDate(monthStart))}–{shortDate.format(parseDate(monthEnd))}</div>
           </div>
         </header>
