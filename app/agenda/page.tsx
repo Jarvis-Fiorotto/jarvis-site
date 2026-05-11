@@ -132,8 +132,8 @@ export default async function AgendaPage({ searchParams }: PageProps) {
   const pending = occurrences.filter((event) => event.status === "pending");
 
   return (
-    <main className="appShell adminShell">
-      <section className="contentShell fullWidth">
+    <main className="agendaShell">
+      <section className="agendaContent">
         <header className="dashboardHeader">
           <div>
             <p className="eyebrow">JARVIS · Agenda pessoal</p>
@@ -158,7 +158,7 @@ export default async function AgendaPage({ searchParams }: PageProps) {
           </div>
           <form action="/api/agenda/events" method="post" className="agendaForm">
             <label>Nome<input name="title" required maxLength={120} placeholder="Ex: Consulta, jantar, reunião" /></label>
-            <div className="formGrid">
+            <div className="formGrid twoColumns">
               <label>Início<input name="startsAt" required type="datetime-local" defaultValue={toLocalInputValue(new Date().toISOString())} /></label>
               <label>Fim<input name="endsAt" required type="datetime-local" defaultValue={toLocalInputValue(new Date(Date.now() + 60 * 60 * 1000).toISOString())} /></label>
             </div>

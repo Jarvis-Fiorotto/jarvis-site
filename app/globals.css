@@ -549,7 +549,18 @@ button { cursor: pointer; }
 }
 
 /* Agenda */
-.adminShell .contentShell.fullWidth { width: min(1180px, 100%); margin: 0 auto; }
+.agendaShell {
+  width: min(1180px, calc(100% - 32px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 34px 0 80px;
+}
+.agendaContent { width: 100%; min-width: 0; }
+.agendaShell .dashboardHeader {
+  align-items: center;
+  padding: 4px 0 10px;
+}
+.agendaShell .sectionTitle { gap: 18px; }
 .panelCard {
   border: 1px solid var(--line);
   border-radius: 26px;
@@ -590,6 +601,7 @@ button { cursor: pointer; }
 .agendaForm textarea { resize: vertical; }
 .agendaForm input:focus, .agendaForm textarea:focus, .agendaForm select:focus { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(62,231,255,.12); }
 .formGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.formGrid.twoColumns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .reminderChoices { border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-wrap: wrap; gap: 12px 18px; }
 .reminderChoices legend { color: var(--cyan); font-weight: 900; padding: 0 6px; }
 .reminderChoices label { display: inline-flex; align-items: center; gap: 7px; }
@@ -604,7 +616,12 @@ button { cursor: pointer; }
   font-weight: 950;
 }
 @media (max-width: 760px) {
-  .formGrid { grid-template-columns: 1fr; }
+  .agendaShell { width: min(100% - 24px, 1180px); padding-top: 18px; }
+  .agendaShell .dashboardHeader, .agendaShell .sectionTitle { display: grid; grid-template-columns: 1fr; align-items: start; }
+  .agendaShell .statusStack { justify-items: start; }
+  .panelCard { padding: 16px; border-radius: 22px; }
+  .formGrid, .formGrid.twoColumns { grid-template-columns: 1fr; }
   .primaryButton { width: 100%; }
   .eventTopline { flex-direction: column; }
+  .actionRow .ghostButton, .actionRow form, .actionRow button { width: 100%; text-align: center; justify-content: center; }
 }
