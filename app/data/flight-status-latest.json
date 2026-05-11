@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-10T22:31:32.236Z",
+  "updated_at": "2026-05-11T10:49:46.432Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -16,15 +16,9 @@
     "queries": 58
   },
   "last_run": {
-    "queries": 2,
-    "candidates": 5,
-    "logs": [
-      "cache 2026-05-10|AD2753|CWB|VCP|11:35",
-      "cache 2026-05-10|AD4727|VCP|CAC|13:55",
-      "cache 2026-05-10|AD4175|CAC|VCP|16:05",
-      "updated 2026-05-10|AD4546|VCP|CWB|19:15",
-      "updated 2026-05-10|AD2966|CWB|VCP|20:55"
-    ]
+    "queries": 0,
+    "candidates": 0,
+    "logs": []
   },
   "flights": {
     "2026-05-08|AD4023|CWB|GIG|17:25": {
