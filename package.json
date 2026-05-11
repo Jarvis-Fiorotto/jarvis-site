@@ -9,7 +9,8 @@
     "lint": "next lint",
     "update:flight-status": "node scripts/update-flightaware-status.mjs",
     "update:flight-briefings": "node scripts/update-flight-briefings.mjs",
-    "runtime:upload": "node scripts/supabase-upload-documents.mjs"
+    "runtime:upload": "node scripts/supabase-upload-documents.mjs",
+    "agenda:reminders": "node scripts/agenda-reminders.mjs"
   },
   "dependencies": {
     "@types/node": "^22.10.2",

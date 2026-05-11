@@ -547,3 +547,64 @@ button { cursor: pointer; }
 .overnightWindow::before {
   content: "⚠ ";
 }
+
+/* Agenda */
+.adminShell .contentShell.fullWidth { width: min(1180px, 100%); margin: 0 auto; }
+.panelCard {
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  padding: 22px;
+  background: var(--card);
+  box-shadow: 0 16px 50px rgba(0,0,0,.18);
+  backdrop-filter: blur(18px);
+  margin-bottom: 18px;
+}
+.timelineList { display: grid; gap: 12px; }
+.agendaEvent.pending { border-color: rgba(255,184,77,.42); background: rgba(255,184,77,.06); }
+.eventCard {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 20px;
+  padding: 16px;
+  background: rgba(255,255,255,.055);
+  display: grid;
+  gap: 9px;
+}
+.eventCard h3 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
+.eventCard p { margin: 0; line-height: 1.45; }
+.eventTopline { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
+.eventTopline strong { color: var(--cyan); }
+.actionRow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+.actionRow form { margin: 0; }
+.inlineForm { display: inline-flex; }
+.agendaForm { display: grid; gap: 14px; }
+.agendaForm label { display: grid; gap: 7px; color: #dce8f7; font-weight: 800; }
+.agendaForm input, .agendaForm textarea, .agendaForm select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+  padding: 12px 13px;
+  outline: none;
+}
+.agendaForm textarea { resize: vertical; }
+.agendaForm input:focus, .agendaForm textarea:focus, .agendaForm select:focus { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(62,231,255,.12); }
+.formGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.reminderChoices { border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-wrap: wrap; gap: 12px 18px; }
+.reminderChoices legend { color: var(--cyan); font-weight: 900; padding: 0 6px; }
+.reminderChoices label { display: inline-flex; align-items: center; gap: 7px; }
+.reminderChoices input { width: auto; }
+.primaryButton {
+  width: max-content;
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 18px;
+  background: var(--cyan);
+  color: #06101c;
+  font-weight: 950;
+}
+@media (max-width: 760px) {
+  .formGrid { grid-template-columns: 1fr; }
+  .primaryButton { width: 100%; }
+  .eventTopline { flex-direction: column; }
+}

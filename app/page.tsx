@@ -787,9 +787,6 @@ export default async function Home() {
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
-  const agendaItems = getAgendaItems(todayKey, 21);
-  const agendaGroups = groupAgendaItems(agendaItems);
-  const agendaDays = Object.keys(agendaGroups).sort();
   const manualBriefing = latestManualBriefing();
   const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
@@ -806,7 +803,7 @@ export default async function Home() {
         <nav className="navList" aria-label="Módulos">
           <a className="navItem active" href="#escala">Escala</a>
           {canViewBriefing && <a className="navItem" href="#briefing">Briefing</a>}
-          {canViewAgenda && <a className="navItem" href="#agenda">Agenda</a>}
+          {canViewAgenda && <a className="navItem" href="/agenda">Agenda</a>}
           {canViewFinances && <a className="navItem disabled" aria-disabled="true">Finanças</a>}
           {canViewTravel && <a className="navItem disabled" aria-disabled="true">Viagens</a>}
           {canViewAdmin && <a className="navItem" href="/admin">Admin</a>}
@@ -923,47 +920,6 @@ export default async function Home() {
 
         </section>
 
-        {canViewAgenda && (
-          <section id="agenda" className="timeline compactTimeline">
-            <div className="sectionTitle">
-              <div>
-                <p className="eyebrow">Agenda</p>
-                <h2>Próximos 21 dias</h2>
-              </div>
-              <span className="muted">Voos, apresentações, vans, pernoites, folgas e atividades relevantes em ordem operacional.</span>
-            </div>
-            <div className="daysList compactDays">
-              {agendaDays.map((day) => (
-                <article className={`dayCard ${day === todayKey ? "focus" : ""}`} key={day}>
-                  <div className="dayHeader">
-                    <div>
-                      <time>{day === todayKey ? "Hoje" : collator.format(parseDate(day))}</time>
-                      <strong>{longDate.format(parseDate(day))}</strong>
-                    </div>
-                    <span>{agendaGroups[day].length} item(ns)</span>
-                  </div>
-                  <div className="eventList reduced">
-                    {agendaGroups[day].map((item) => (
-                      <div className="eventRow" key={item.id}>
-                        <div className="timeBlock">
-                          <strong>{item.time}</strong>
-                          <span>{item.category}</span>
-                        </div>
-                        <div className="eventMain">
-                          <div>
-                            <strong>{item.label}</strong>
-                            <span>{item.detail}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </article>
-              ))}
-              {!agendaDays.length && <p className="muted">Nenhum compromisso encontrado nos próximos 21 dias.</p>}
-            </div>
-          </section>
-        )}
 
         <section className="timeline compactTimeline">
           <div className="sectionTitle">
