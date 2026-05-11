@@ -1,9 +1,12 @@
-import roster from "./data/roster-latest.json";
-import hotels from "./data/hotels-latest.json";
-import flightStatusJson from "./data/flight-status-latest.json";
-import flightBriefingJson from "./data/flight-briefing-latest.json";
+import rosterFallback from "./data/roster-latest.json";
+import hotelsFallback from "./data/hotels-latest.json";
+import flightStatusFallback from "./data/flight-status-latest.json";
+import flightBriefingFallback from "./data/flight-briefing-latest.json";
 import { currentUser } from "../lib/auth";
 import { redirect } from "next/navigation";
+import { loadRuntimeDocument } from "../lib/runtime-data";
+
+export const dynamic = "force-dynamic";
 
 type RosterEvent = {
   id: string;
@@ -122,12 +125,32 @@ type FlightBriefingData = {
   briefings: Record<string, FlightBriefing>;
 };
 
-const data = roster as RosterData;
-const hotelData = hotels as HotelData;
-const flightStatusData = flightStatusJson as FlightStatusData;
-const flightBriefingData = flightBriefingJson as FlightBriefingData;
-const hotelReservations = hotelData.reservations || [];
-const events = data.events.filter((event) => !event.canceled);
+let data = rosterFallback as RosterData;
+let hotelData = hotelsFallback as HotelData;
+let flightStatusData = flightStatusFallback as FlightStatusData;
+let flightBriefingData = flightBriefingFallback as FlightBriefingData;
+let hotelReservations = hotelData.reservations || [];
+let events = data.events.filter((event) => !event.canceled);
+let dataSourceLabel = "Local cache";
+let dataUpdatedAt: string | null = data.generated_at || null;
+
+async function hydrateRuntimeData() {
+  const [rosterResult, travelResult, statusResult, briefingResult] = await Promise.all([
+    loadRuntimeDocument<RosterData>("roster-latest", rosterFallback as RosterData),
+    loadRuntimeDocument<HotelData>("travel", hotelsFallback as HotelData),
+    loadRuntimeDocument<FlightStatusData>("flight-status-latest", flightStatusFallback as FlightStatusData),
+    loadRuntimeDocument<FlightBriefingData>("flight-briefing-latest", flightBriefingFallback as FlightBriefingData)
+  ]);
+
+  data = rosterResult.data;
+  hotelData = travelResult.data;
+  flightStatusData = statusResult.data;
+  flightBriefingData = briefingResult.data;
+  hotelReservations = hotelData.reservations || [];
+  events = (data.events || []).filter((event) => !event.canceled);
+  dataSourceLabel = rosterResult.source === "supabase" ? "Supabase live" : "Local cache";
+  dataUpdatedAt = rosterResult.updatedAt || data.generated_at || null;
+}
 const collator = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
 const longDate = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
 const shortDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -648,6 +671,8 @@ export default async function Home() {
   const user = await currentUser();
   if (!user) redirect("/login");
 
+  await hydrateRuntimeData();
+
   const grouped = groupByDay(events);
   const todayKey = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
@@ -707,6 +732,7 @@ export default async function Home() {
           </div>
           <div className="statusStack">
             <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
+            <div className="statusChip">Dados: {dataSourceLabel}</div>
             <div className="periodChip">{monthLabel(monthStart)} · {shortDate.format(parseDate(monthStart))}–{shortDate.format(parseDate(monthEnd))}</div>
           </div>
         </header>
