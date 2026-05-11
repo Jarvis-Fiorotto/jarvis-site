@@ -615,6 +615,82 @@ function transportDateTime(transport: HotelTransport) {
   return new Date(`${transport.pickup_date_iso}T${transport.pickup_time}:00-03:00`);
 }
 
+type AgendaItem = {
+  id: string;
+  sortAt: Date;
+  date: string;
+  time: string;
+  label: string;
+  detail: string;
+  category: string;
+  priority: number;
+};
+
+function getAgendaItems(todayKey: string, daysAhead = 21) {
+  const startKey = todayKey;
+  const endKey = addDays(todayKey, daysAhead);
+  const rosterItems: AgendaItem[] = events
+    .filter((event) => event.type !== "HOTEL" && event.date >= startKey && event.date <= endKey)
+    .map((event) => ({
+      id: `roster-${event.id}`,
+      sortAt: new Date(event.start_local),
+      label: event.label,
+      date: event.date,
+      time: `${event.start_time} → ${event.end_time}`,
+      detail: event.details || shortAirport(event),
+      category: kindLabel(event),
+      priority: event.type === "CHECK" && event.subtype === "IN" ? 1 : event.type === "FLY" ? 2 : 4
+    }));
+
+  const transportItems: AgendaItem[] = hotelReservations.flatMap((reservation) =>
+    reservation.transports.map((transport, index) => {
+      const sortAt = transportDateTime(transport);
+      const date = transport.pickup_date_iso || reservation.date_iso || "";
+      if (!sortAt || !date || date < startKey || date > endKey) return null;
+      const isPickup = transport.direction === "to_airport";
+      return {
+        id: `transport-${reservation.airport}-${date}-${transport.pickup_time}-${index}`,
+        sortAt,
+        label: isPickup ? "Esteja pronto para a van" : "Van para o hotel",
+        date,
+        time: transport.pickup_time,
+        detail: `${airportLabel(reservation.airport)} · ${transport.company}`,
+        category: "Transporte",
+        priority: isPickup ? 0 : 3
+      };
+    }).filter((item): item is AgendaItem => item !== null)
+  );
+
+  const hotelItems: AgendaItem[] = hotelReservations
+    .map((reservation, index) => {
+      const date = reservation.date_iso || "";
+      if (!date || date < startKey || date > endKey) return null;
+      return {
+        id: `hotel-${reservation.airport}-${date}-${index}`,
+        sortAt: parseDate(date),
+        label: reservation.hotel?.name || "Pernoite",
+        date,
+        time: "Hotel",
+        detail: `${airportLabel(reservation.airport)} · ${reservation.hotel?.address || reservation.city}`,
+        category: "Pernoite",
+        priority: 5
+      };
+    })
+    .filter((item): item is AgendaItem => item !== null);
+
+  return [...transportItems, ...rosterItems, ...hotelItems]
+    .filter((item) => Number.isFinite(item.sortAt.getTime()))
+    .sort((a, b) => a.sortAt.getTime() - b.sortAt.getTime() || a.priority - b.priority || a.label.localeCompare(b.label));
+}
+
+function groupAgendaItems(items: AgendaItem[]) {
+  return items.reduce<Record<string, AgendaItem[]>>((acc, item) => {
+    acc[item.date] ||= [];
+    acc[item.date].push(item);
+    return acc;
+  }, {});
+}
+
 function getUpcoming() {
   const now = new Date();
   const rosterItems = events
@@ -711,6 +787,9 @@ export default async function Home() {
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
+  const agendaItems = getAgendaItems(todayKey, 21);
+  const agendaGroups = groupAgendaItems(agendaItems);
+  const agendaDays = Object.keys(agendaGroups).sort();
   const manualBriefing = latestManualBriefing();
   const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
@@ -843,6 +922,48 @@ export default async function Home() {
           {canViewBriefing && (manualBriefing ? <ManualPreflightBriefing briefing={manualBriefing} /> : briefingFlight && <PreflightBriefing event={briefingFlight} />)}
 
         </section>
+
+        {canViewAgenda && (
+          <section id="agenda" className="timeline compactTimeline">
+            <div className="sectionTitle">
+              <div>
+                <p className="eyebrow">Agenda</p>
+                <h2>Próximos 21 dias</h2>
+              </div>
+              <span className="muted">Voos, apresentações, vans, pernoites, folgas e atividades relevantes em ordem operacional.</span>
+            </div>
+            <div className="daysList compactDays">
+              {agendaDays.map((day) => (
+                <article className={`dayCard ${day === todayKey ? "focus" : ""}`} key={day}>
+                  <div className="dayHeader">
+                    <div>
+                      <time>{day === todayKey ? "Hoje" : collator.format(parseDate(day))}</time>
+                      <strong>{longDate.format(parseDate(day))}</strong>
+                    </div>
+                    <span>{agendaGroups[day].length} item(ns)</span>
+                  </div>
+                  <div className="eventList reduced">
+                    {agendaGroups[day].map((item) => (
+                      <div className="eventRow" key={item.id}>
+                        <div className="timeBlock">
+                          <strong>{item.time}</strong>
+                          <span>{item.category}</span>
+                        </div>
+                        <div className="eventMain">
+                          <div>
+                            <strong>{item.label}</strong>
+                            <span>{item.detail}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              ))}
+              {!agendaDays.length && <p className="muted">Nenhum compromisso encontrado nos próximos 21 dias.</p>}
+            </div>
+          </section>
+        )}
 
         <section className="timeline compactTimeline">
           <div className="sectionTitle">
