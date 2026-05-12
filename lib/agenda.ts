@@ -56,7 +56,9 @@ type RosterEvent = {
   end_local: string;
   type: string;
   subtype?: string;
+  code?: string | null;
   label: string;
+  details?: string | null;
   from?: string | null;
   to?: string | null;
   canceled?: boolean;
@@ -294,6 +296,27 @@ function lastTransportDate(transports: HotelTransport[], direction: string) {
     .sort((a, b) => b.getTime() - a.getTime())[0] || null;
 }
 
+function isOffRosterEvent(event: RosterEvent) {
+  return ["OFF", "REST", "DAY_OFF"].includes(event.type) || event.subtype === "OFF";
+}
+
+function isBlockingRosterEvent(event: RosterEvent) {
+  if (event.type === "HOTEL") return false;
+  if (isOffRosterEvent(event)) return false;
+  return Boolean(event.start_local && event.end_local);
+}
+
+function rosterBlockTitle(events: RosterEvent[]) {
+  return events.some((event) => event.type === "FLY") ? "Voo" : "Trabalho";
+}
+
+function rosterBlockDescription(events: RosterEvent[]) {
+  const labels = events
+    .map((event) => event.label || event.details || event.type)
+    .filter(Boolean);
+  return `Bloqueio automático da escala: ${labels.join(", ")}`;
+}
+
 export async function rosterAgendaBlocks(rangeStart: Date, rangeEnd: Date): Promise<AgendaEvent[]> {
   const [rosterResult, travelResult] = await Promise.all([
     loadRuntimeDocument<RosterData>("roster-latest", rosterFallback as RosterData),
@@ -308,23 +331,27 @@ export async function rosterAgendaBlocks(rangeStart: Date, rangeEnd: Date): Prom
   }, {});
 
   return Object.entries(byDate).flatMap(([day, dayEvents]) => {
-    const flights = dayEvents.filter((event) => event.type === "FLY");
-    if (!flights.length) return [];
-    const checkIn = dayEvents.find((event) => event.type === "CHECK" && event.subtype === "IN");
-    const lastActive = dayEvents.filter((event) => event.type !== "HOTEL").sort((a, b) => new Date(a.end_local).getTime() - new Date(b.end_local).getTime()).at(-1);
+    const blockingEvents = dayEvents.filter(isBlockingRosterEvent);
+    if (!blockingEvents.length) return [];
+
+    const flights = blockingEvents.filter((event) => event.type === "FLY");
+    const checkIn = blockingEvents.find((event) => event.type === "CHECK" && event.subtype === "IN");
+    const lastActive = blockingEvents.sort((a, b) => new Date(a.end_local).getTime() - new Date(b.end_local).getTime()).at(-1);
+    const firstActive = blockingEvents.sort((a, b) => new Date(a.start_local).getTime() - new Date(b.start_local).getTime())[0];
     const relatedReservations = reservations.filter((reservation) => reservation.date_iso === day || reservation.transports.some((transport) => transport.pickup_date_iso === day));
     const transports = relatedReservations.flatMap((reservation) => reservation.transports || []);
-    const toAirport = firstTransportDate(transports, "to_airport");
-    const toHotel = lastTransportDate(transports, "to_hotel");
-    const start = toAirport || new Date(checkIn?.start_local || flights[0].start_local);
-    const end = toHotel || new Date(lastActive?.end_local || flights.at(-1)?.end_local || flights[0].end_local);
+    const toAirport = flights.length ? firstTransportDate(transports, "to_airport") : null;
+    const toHotel = flights.length ? lastTransportDate(transports, "to_hotel") : null;
+    const start = toAirport || new Date(checkIn?.start_local || firstActive.start_local);
+    const end = toHotel || new Date(lastActive?.end_local || firstActive.end_local);
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end <= start || end < rangeStart || start > rangeEnd) return [];
+
     return [{
-      id: `roster-${day}-${crypto.createHash("sha1").update(flights.map((flight) => flight.id).join("|")).digest("hex").slice(0, 12)}`,
-      title: "Voo",
+      id: `roster-${day}-${crypto.createHash("sha1").update(blockingEvents.map((event) => event.id).join("|")).digest("hex").slice(0, 12)}`,
+      title: rosterBlockTitle(blockingEvents),
       startsAt: start.toISOString(),
       endsAt: end.toISOString(),
-      description: `Bloqueio automático da escala: ${flights.map((flight) => flight.label).join(", ")}`,
+      description: rosterBlockDescription(blockingEvents),
       address: null,
       status: "approved" as AgendaStatus,
       visibility: "shared" as AgendaVisibility,
