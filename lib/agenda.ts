@@ -280,19 +280,22 @@ function transportDateTime(transport: HotelTransport) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function firstTransportDate(transports: HotelTransport[], direction: string) {
+function transportDates(transports: HotelTransport[], direction: string) {
   return transports
     .filter((transport) => transport.direction === direction)
     .map(transportDateTime)
-    .filter((value): value is Date => Boolean(value))
-    .sort((a, b) => a.getTime() - b.getTime())[0] || null;
+    .filter((value): value is Date => Boolean(value));
 }
 
-function lastTransportDate(transports: HotelTransport[], direction: string) {
-  return transports
-    .filter((transport) => transport.direction === direction)
-    .map(transportDateTime)
-    .filter((value): value is Date => Boolean(value))
+function closestTransportAtOrBefore(transports: HotelTransport[], direction: string, reference: Date) {
+  return transportDates(transports, direction)
+    .filter((date) => date <= reference)
+    .sort((a, b) => b.getTime() - a.getTime())[0] || null;
+}
+
+function latestTransportAtOrAfter(transports: HotelTransport[], direction: string, reference: Date) {
+  return transportDates(transports, direction)
+    .filter((date) => date >= reference)
     .sort((a, b) => b.getTime() - a.getTime())[0] || null;
 }
 
@@ -338,12 +341,14 @@ export async function rosterAgendaBlocks(rangeStart: Date, rangeEnd: Date): Prom
     const checkIn = blockingEvents.find((event) => event.type === "CHECK" && event.subtype === "IN");
     const lastActive = blockingEvents.sort((a, b) => new Date(a.end_local).getTime() - new Date(b.end_local).getTime()).at(-1);
     const firstActive = blockingEvents.sort((a, b) => new Date(a.start_local).getTime() - new Date(b.start_local).getTime())[0];
+    const activeStart = new Date(checkIn?.start_local || firstActive.start_local);
+    const activeEnd = new Date(lastActive?.end_local || firstActive.end_local);
     const relatedReservations = reservations.filter((reservation) => reservation.date_iso === day || reservation.transports.some((transport) => transport.pickup_date_iso === day));
     const transports = relatedReservations.flatMap((reservation) => reservation.transports || []);
-    const toAirport = flights.length ? firstTransportDate(transports, "to_airport") : null;
-    const toHotel = flights.length ? lastTransportDate(transports, "to_hotel") : null;
-    const start = toAirport || new Date(checkIn?.start_local || firstActive.start_local);
-    const end = toHotel || new Date(lastActive?.end_local || firstActive.end_local);
+    const toAirport = flights.length ? closestTransportAtOrBefore(transports, "to_airport", activeStart) : null;
+    const toHotel = flights.length ? latestTransportAtOrAfter(transports, "to_hotel", activeEnd) : null;
+    const start = toAirport && toAirport < activeStart ? toAirport : activeStart;
+    const end = toHotel && toHotel > activeEnd ? toHotel : activeEnd;
     if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end <= start || end < rangeStart || start > rangeEnd) return [];
 
     return [{
