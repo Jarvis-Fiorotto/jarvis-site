@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-12T16:38:37.659Z",
+  "updated_at": "2026-05-12T21:52:36.218Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,12 +13,14 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 58
+    "queries": 59
   },
   "last_run": {
-    "queries": 0,
-    "candidates": 0,
-    "logs": []
+    "queries": 1,
+    "candidates": 1,
+    "logs": [
+      "error 2026-05-14|AD2706|VCP|BSB|06:00: FlightAware HTTP 400"
+    ]
   },
   "flights": {
     "2026-05-08|AD4023|CWB|GIG|17:25": {
@@ -410,6 +412,27 @@
       "terminal_destination": null,
       "gate_origin": "11",
       "gate_destination": null
+    },
+    "2026-05-14|AD2706|VCP|BSB|06:00": {
+      "key": "2026-05-14|AD2706|VCP|BSB|06:00",
+      "roster": {
+        "date": "2026-05-14",
+        "label": "AD2706",
+        "flight": "AD2706",
+        "ident_icao": "AZU2706",
+        "from": "VCP",
+        "to": "BSB",
+        "start_time": "06:00",
+        "end_time": "07:35"
+      },
+      "updated_at": "2026-05-12T21:52:36.218Z",
+      "source": "flightaware_aeroapi",
+      "normalized_status": "unavailable",
+      "error": {
+        "message": "FlightAware HTTP 400",
+        "status": 400,
+        "retry_after": null
+      }
     }
   }
 }
