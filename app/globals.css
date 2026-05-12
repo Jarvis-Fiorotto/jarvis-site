@@ -779,7 +779,7 @@ button { cursor: pointer; }
   box-shadow: 0 10px 28px rgba(0,0,0,.22);
 }
 .weekEvent span,
-.weekEvent strong { display: block; }
+.weekEvent strong { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .weekEvent span { color: rgba(255,255,255,.78); font-size: 12px; font-weight: 800; }
 .weekEvent strong { font-size: 13px; line-height: 1.15; margin-top: 2px; }
 .weekEvent.roster,
@@ -797,7 +797,7 @@ button { cursor: pointer; }
 .weekDetails {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 0;
   border-top: 1px solid var(--line);
   background: rgba(255,255,255,.025);
@@ -806,9 +806,11 @@ button { cursor: pointer; }
   min-width: 0;
   padding: 14px;
   border-left: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
   display: grid;
   align-content: start;
   gap: 10px;
+  overflow: hidden;
 }
 .dayAgendaStack:first-child { border-left: 0; }
 .dayAgendaTitle {
@@ -823,14 +825,25 @@ button { cursor: pointer; }
   color: var(--cyan);
 }
 .calendarDetailCard {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 18px;
   padding: 13px;
   display: grid;
   gap: 8px;
 }
-.calendarDetailCard h3 { margin: 0; font-size: 18px; letter-spacing: -.03em; }
-.calendarDetailCard p { margin: 0; }
+.calendarDetailCard h3 { margin: 0; font-size: 18px; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.calendarDetailCard p { margin: 0; overflow-wrap: anywhere; }
+.calendarDetailCard .eventTopline { flex-wrap: wrap; min-width: 0; }
+.calendarDetailCard .actionRow { min-width: 0; }
+.calendarDetailCard .actionRow .ghostButton,
+.calendarDetailCard .actionRow button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 .monthBoard {
   display: grid;
   grid-template-columns: repeat(7, minmax(130px, 1fr));
@@ -847,6 +860,7 @@ button { cursor: pointer; }
   background: rgba(255,255,255,.045);
 }
 .monthCell {
+  min-width: 0;
   min-height: 154px;
   padding: 12px;
   color: var(--text);
@@ -856,6 +870,7 @@ button { cursor: pointer; }
   display: grid;
   align-content: start;
   gap: 10px;
+  overflow: hidden;
 }
 .monthCell.out { opacity: .42; }
 .monthCell.today { background: rgba(62,231,255,.055); }
