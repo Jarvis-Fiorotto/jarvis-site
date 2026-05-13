@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-12T21:52:36.218Z",
+  "updated_at": "2026-05-13T08:22:25.419Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,13 +13,14 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 59
+    "queries": 61
   },
   "last_run": {
-    "queries": 1,
-    "candidates": 1,
+    "queries": 2,
+    "candidates": 2,
     "logs": [
-      "error 2026-05-14|AD2706|VCP|BSB|06:00: FlightAware HTTP 400"
+      "updated 2026-05-14|AD2706|VCP|BSB|06:00",
+      "updated 2026-05-14|AD4048|BSB|VCP|08:15"
     ]
   },
   "flights": {
@@ -425,14 +426,71 @@
         "start_time": "06:00",
         "end_time": "07:35"
       },
-      "updated_at": "2026-05-12T21:52:36.218Z",
+      "updated_at": "2026-05-13T08:22:25.419Z",
       "source": "flightaware_aeroapi",
-      "normalized_status": "unavailable",
-      "error": {
-        "message": "FlightAware HTTP 400",
-        "status": 400,
-        "retry_after": null
-      }
+      "ident": "AZU2706",
+      "ident_icao": "AZU2706",
+      "ident_iata": "AD2706",
+      "fa_flight_id": "AZU2706-1778574946-airline-989p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "VCP",
+      "destination": "BSB",
+      "scheduled_out": "2026-05-14T09:00:00Z",
+      "estimated_out": "2026-05-14T09:00:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-14T09:10:00Z",
+      "estimated_off": "2026-05-14T09:10:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-14T10:25:00Z",
+      "estimated_on": "2026-05-14T10:25:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-14T10:35:00Z",
+      "estimated_in": "2026-05-14T10:35:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
+    },
+    "2026-05-14|AD4048|BSB|VCP|08:15": {
+      "key": "2026-05-14|AD4048|BSB|VCP|08:15",
+      "roster": {
+        "date": "2026-05-14",
+        "label": "AD4048",
+        "flight": "AD4048",
+        "ident_icao": "AZU4048",
+        "from": "BSB",
+        "to": "VCP",
+        "start_time": "08:15",
+        "end_time": "09:55"
+      },
+      "updated_at": "2026-05-13T08:22:25.419Z",
+      "source": "flightaware_aeroapi",
+      "ident": "AZU4048",
+      "ident_icao": "AZU4048",
+      "ident_iata": "AD4048",
+      "fa_flight_id": "AZU4048-1778575896-airline-1415p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "BSB",
+      "destination": "VCP",
+      "scheduled_out": "2026-05-14T11:15:00Z",
+      "estimated_out": "2026-05-14T11:15:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-14T11:25:00Z",
+      "estimated_off": "2026-05-14T11:25:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-14T12:45:00Z",
+      "estimated_on": "2026-05-14T12:45:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-14T12:55:00Z",
+      "estimated_in": "2026-05-14T12:55:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
     }
   }
 }
