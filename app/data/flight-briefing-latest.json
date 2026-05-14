@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-14T08:12:48.701Z",
+  "updated_at": "2026-05-14T16:23:32.916Z",
   "provider": "aviationweather.gov",
   "status": "partial_until_lido_enabled",
   "limits": {
@@ -11,11 +11,9 @@
     "liveWeatherMaxAgeMinutes": 90
   },
   "last_run": {
-    "queries": 4,
-    "candidates": 1,
-    "logs": [
-      "updated 2026-05-14|AD2706|VCP|BSB|06:00"
-    ]
+    "queries": 0,
+    "candidates": 0,
+    "logs": []
   },
   "briefings": {
     "manual|AD2752|CNF|SSA": {
