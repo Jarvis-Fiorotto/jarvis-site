@@ -29,6 +29,26 @@ type RosterEvent = {
   canceled?: boolean;
 };
 
+type RosterPendingChange = {
+  type: "added" | "removed" | "modified";
+  date?: string | null;
+  id: string;
+  fields?: string[];
+  current?: RosterEvent | null;
+  proposed?: RosterEvent | null;
+  summary?: string | null;
+};
+
+type RosterPendingChanges = {
+  status: "pending" | "none";
+  count: number;
+  generated_at?: string | null;
+  source?: string | null;
+  safety?: string | null;
+  changes: RosterPendingChange[];
+  by_date?: Record<string, RosterPendingChange[]>;
+};
+
 type RosterData = {
   source: string;
   generated_at: string;
@@ -36,6 +56,7 @@ type RosterData = {
   period_end: string;
   counts: { events: number; duties: number; pairings: number; activities: number };
   events: RosterEvent[];
+  pending_changes?: RosterPendingChanges | null;
 };
 type HotelTransport = {
   company: string;
@@ -133,6 +154,7 @@ let hotelReservations = hotelData.reservations || [];
 let events = data.events.filter((event) => !event.canceled);
 let dataSourceLabel = "Local cache";
 let dataUpdatedAt: string | null = data.generated_at || null;
+let pendingRosterChanges: RosterPendingChange[] = [];
 
 async function hydrateRuntimeData() {
   const [rosterResult, travelResult, statusResult, briefingResult] = await Promise.all([
@@ -148,6 +170,7 @@ async function hydrateRuntimeData() {
   flightBriefingData = briefingResult.data;
   hotelReservations = hotelData.reservations || [];
   events = (data.events || []).filter((event) => !event.canceled);
+  pendingRosterChanges = data.pending_changes?.status === "pending" ? data.pending_changes.changes || [] : [];
   dataSourceLabel = rosterResult.source === "supabase" ? "Supabase live" : "Local cache";
   dataUpdatedAt = rosterResult.updatedAt || data.generated_at || null;
 }
@@ -437,6 +460,48 @@ function kindLabel(event: RosterEvent) {
     other: event.type
   };
   return labels[kind];
+}
+
+function eventOneLine(event?: RosterEvent | null) {
+  if (!event) return "—";
+  return [
+    `${event.start_time || "—"}–${event.end_time || "—"}`,
+    event.label,
+    shortAirport(event),
+    event.details
+  ].filter(Boolean).join(" · ");
+}
+
+function pendingChangeLabel(type: RosterPendingChange["type"]) {
+  if (type === "added") return "Adicionado";
+  if (type === "removed") return "Removido";
+  return "Alterado";
+}
+
+function pendingChangesForDay(day: string) {
+  return pendingRosterChanges.filter((change) => change.date === day);
+}
+
+function PendingChangesPanel({ changes, compact = false }: { changes: RosterPendingChange[]; compact?: boolean }) {
+  if (!changes.length) return null;
+  return (
+    <div className={`pendingChangesPanel ${compact ? "compact" : ""}`}>
+      <div className="pendingChangesTitle">
+        <strong>⚠️ Alteração pendente no CAE</strong>
+        <span>Informativo apenas · não confirmado/aceito</span>
+      </div>
+      {changes.slice(0, compact ? 2 : 8).map((change) => (
+        <div className={`pendingChangeItem ${change.type}`} key={`${change.type}-${change.id}`}>
+          <span className="pendingChangeBadge">{pendingChangeLabel(change.type)}</span>
+          <div>
+            {change.type !== "added" && <p><b>Atual:</b> {eventOneLine(change.current)}</p>}
+            {change.type !== "removed" && <p><b>Proposto:</b> {eventOneLine(change.proposed)}</p>}
+          </div>
+        </div>
+      ))}
+      {changes.length > (compact ? 2 : 8) && <small>+ {changes.length - (compact ? 2 : 8)} alteração(ões) no período.</small>}
+    </div>
+  );
 }
 
 function parseDate(date: string) {
@@ -783,6 +848,8 @@ export default async function Home() {
   const days = upcomingDays.length ? upcomingDays : monthDays.slice(-1);
   const focusDay = firstTodayOrFuture || monthDays[0];
   const focusEvents = grouped[focusDay] || [];
+  const pendingFocusChanges = pendingChangesForDay(focusDay);
+  const pendingDates = new Set(pendingRosterChanges.map((change) => change.date).filter(Boolean));
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
@@ -829,9 +896,20 @@ export default async function Home() {
           <div className="statusStack">
             <div className="statusChip">Hoje: {new Date(`${todayKey}T12:00:00-03:00`).toLocaleDateString("pt-BR")}</div>
             <div className="statusChip">Dados: {dataSourceLabel} · {runtimeUpdatedLabel(dataUpdatedAt)}</div>
+            {pendingRosterChanges.length > 0 && <div className="statusChip warning">⚠️ {pendingRosterChanges.length} alteração(ões) pendente(s)</div>}
             <div className="periodChip">{monthLabel(monthStart)} · {shortDate.format(parseDate(monthStart))}–{shortDate.format(parseDate(monthEnd))}</div>
           </div>
         </header>
+
+        {pendingRosterChanges.length > 0 && (
+          <section className="pendingRosterBanner">
+            <div>
+              <strong>Modificação pendente detectada no CAE</strong>
+              <span>O painel abaixo mostra a escala publicada como base e destaca o que aparece como proposta/pendência. Nenhuma confirmação, aceite ou alteração operacional é feita pelo site.</span>
+            </div>
+            <a href="#alteracoes-pendentes">Ver alterações</a>
+          </section>
+        )}
 
         <section className="moduleGrid">
           <article id="escala" className="moduleCard scheduleModule">
@@ -855,6 +933,8 @@ export default async function Home() {
                 </div>
               </div>
             )}
+
+            <PendingChangesPanel changes={pendingFocusChanges} />
 
             {focusHotels.length > 0 && (
               <div className="dayHotelBlock">
@@ -918,6 +998,19 @@ export default async function Home() {
 
           {canViewBriefing && (manualBriefing ? <ManualPreflightBriefing briefing={manualBriefing} /> : briefingFlight && <PreflightBriefing event={briefingFlight} />)}
 
+          {pendingRosterChanges.length > 0 && (
+            <article id="alteracoes-pendentes" className="moduleCard pendingRosterModule">
+              <div className="moduleHeader">
+                <div>
+                  <p className="eyebrow">CAE informativo</p>
+                  <h2>Alterações pendentes</h2>
+                </div>
+                <span>{pendingRosterChanges.length} item(ns)</span>
+              </div>
+              <PendingChangesPanel changes={pendingRosterChanges} />
+            </article>
+          )}
+
         </section>
 
 
@@ -936,14 +1029,15 @@ export default async function Home() {
               const summary = isHiddenDay ? null : daySummary(dayEvents);
               const dayHotels = hotelsForDay(day);
               return (
-                <article className={`dayCard ${day === focusDay ? "focus" : ""} ${isHiddenDay ? "hiddenDay" : ""}`} key={day}>
+                <article className={`dayCard ${day === focusDay ? "focus" : ""} ${isHiddenDay ? "hiddenDay" : ""} ${pendingDates.has(day) ? "hasPendingChange" : ""}`} key={day}>
                   <div className="dayHeader">
                     <div>
                       <time>{day === todayKey ? "Hoje" : collator.format(parseDate(day))}</time>
                       <strong>{isHiddenDay ? "Dia oculto" : summary?.route}</strong>
                     </div>
-                    <span>{isHiddenDay ? "sem alocação" : summary?.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                    <span>{pendingDates.has(day) ? "pendente no CAE" : isHiddenDay ? "sem alocação" : summary?.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
                   </div>
+                  <PendingChangesPanel changes={pendingChangesForDay(day)} compact />
                   {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
                   {!isHiddenDay && <div className="eventList reduced">
                     {displayEvents(dayEvents).slice(0, 5).map((event) => (
@@ -997,14 +1091,15 @@ export default async function Home() {
                   const summary = isHiddenDay ? null : daySummary(dayEvents);
                   const dayHotels = hotelsForDay(day);
                   return (
-                    <article className={`dayCard past ${isHiddenDay ? "hiddenDay" : ""}`} key={day}>
+                    <article className={`dayCard past ${isHiddenDay ? "hiddenDay" : ""} ${pendingDates.has(day) ? "hasPendingChange" : ""}`} key={day}>
                       <div className="dayHeader">
                         <div>
                           <time>{collator.format(parseDate(day))}</time>
                           <strong>{isHiddenDay ? "Dia oculto" : summary?.route}</strong>
                         </div>
-                        <span>{isHiddenDay ? "sem alocação" : summary?.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
+                        <span>{pendingDates.has(day) ? "pendente no CAE" : isHiddenDay ? "sem alocação" : summary?.flights.length ? `${summary.flights.length} voo(s)` : kindLabel(dayEvents[0])}</span>
                       </div>
+                      <PendingChangesPanel changes={pendingChangesForDay(day)} compact />
                       {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
                       {!isHiddenDay && <div className="eventList reduced">
                         {displayEvents(dayEvents).slice(0, 5).map((event) => (
