@@ -382,38 +382,6 @@ function PreflightBriefing({ event }: { event: RosterEvent }) {
   );
 }
 
-function ManualPreflightBriefing({ briefing }: { briefing: FlightBriefing }) {
-  const flight = briefing.flight;
-  const alternates = briefing.airports?.alternates || [];
-  return (
-    <article id="briefing" className={`moduleCard briefingModule ${briefing.analysis?.risk === "atenção" ? "attention" : "normal"}`}>
-      <div className="moduleHeader">
-        <div>
-          <p className="eyebrow">Briefing operacional · teste manual</p>
-          <h2>{flight?.flight_number || "Voo"} · {flight?.from || "—"} → {flight?.to || "—"}</h2>
-        </div>
-        <span>{dateTimeFromIso(briefing.updated_at)}</span>
-      </div>
-      <div className="briefingMeta">
-        <span>Fonte meteo: {flightBriefingData.provider || "AviationWeather"}</span>
-        <span>Lido: {briefing.lido?.status === "pending_login_automation" ? "pendente" : briefing.lido?.status || "—"}</span>
-        <span>Manual test</span>
-      </div>
-      <div className="briefingAirports">
-        <AirportBriefingCard title="Origem" airport={briefing.airports?.origin} />
-        <AirportBriefingCard title="Destino" airport={briefing.airports?.destination} />
-        {alternates.length > 0
-          ? alternates.map((airport, index) => <AirportBriefingCard title={`Alternado ${index + 1}`} airport={airport} key={`${airport.icao}-${index}`} />)
-          : <div className="briefingAirport pending"><strong>Alternados</strong><span>Aguardando extração segura do Lido/OFP.</span></div>}
-      </div>
-      <div className="jarvisAnalysis">
-        <strong>Análise JARVIS</strong>
-        <p>{briefing.analysis?.summary || "Aguardando dados suficientes para análise."}</p>
-      </div>
-    </article>
-  );
-}
-
 const NON_OP_LABELS: Record<string, string> = {
   FR: "Folga regulamentar",
   FP: "Folga pedida",
@@ -816,11 +784,6 @@ function latestBriefedFlight() {
     .find((event) => new Date(event.end_local) >= new Date()) || flightEvents.at(-1) || null;
 }
 
-function latestManualBriefing() {
-  return Object.values(flightBriefingData.briefings || {})
-    .filter((briefing) => briefing.key?.startsWith("manual|"))
-    .sort((a, b) => new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime())[0] || null;
-}
 export default async function Home() {
   const user = await currentUser();
   if (!user) redirect("/login");
@@ -854,7 +817,6 @@ export default async function Home() {
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
   const upcoming = getUpcoming();
-  const manualBriefing = latestManualBriefing();
   const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
   return (
@@ -996,7 +958,7 @@ export default async function Home() {
             </article>
           ))}
 
-          {canViewBriefing && (manualBriefing ? <ManualPreflightBriefing briefing={manualBriefing} /> : briefingFlight && <PreflightBriefing event={briefingFlight} />)}
+          {canViewBriefing && briefingFlight && <PreflightBriefing event={briefingFlight} />}
 
           {pendingRosterChanges.length > 0 && (
             <article id="alteracoes-pendentes" className="moduleCard pendingRosterModule">
