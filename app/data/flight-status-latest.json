@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-20T10:37:15.717Z",
+  "updated_at": "2026-05-20T19:36:08.693Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,7 +13,7 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 70
+    "queries": 71
   },
   "last_run": {
     "queries": 1,
@@ -503,7 +503,7 @@
         "start_time": "11:45",
         "end_time": "12:50"
       },
-      "updated_at": "2026-05-20T10:37:15.717Z",
+      "updated_at": "2026-05-20T19:36:08.693Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4173",
       "ident_icao": "AZU4173",
