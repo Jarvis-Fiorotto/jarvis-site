@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-20T19:36:08.693Z",
+  "updated_at": "2026-05-20T23:59:10.505Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,13 +13,15 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 71
+    "queries": 74
   },
   "last_run": {
-    "queries": 1,
-    "candidates": 1,
+    "queries": 3,
+    "candidates": 3,
     "logs": [
-      "updated 2026-05-21|AD4173|VCP|GIG|11:45"
+      "updated 2026-05-21|AD4173|VCP|GIG|11:45",
+      "error 2026-05-22|AD4450|GIG|VCP|05:45: FlightAware HTTP 400",
+      "error 2026-05-22|AD2613|VCP|FLN|08:50: FlightAware HTTP 400"
     ]
   },
   "flights": {
@@ -503,7 +505,7 @@
         "start_time": "11:45",
         "end_time": "12:50"
       },
-      "updated_at": "2026-05-20T19:36:08.693Z",
+      "updated_at": "2026-05-20T23:59:10.505Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4173",
       "ident_icao": "AZU4173",
@@ -529,6 +531,48 @@
       "terminal_destination": "2",
       "gate_origin": null,
       "gate_destination": null
+    },
+    "2026-05-22|AD4450|GIG|VCP|05:45": {
+      "key": "2026-05-22|AD4450|GIG|VCP|05:45",
+      "roster": {
+        "date": "2026-05-22",
+        "label": "AD4450",
+        "flight": "AD4450",
+        "ident_icao": "AZU4450",
+        "from": "GIG",
+        "to": "VCP",
+        "start_time": "05:45",
+        "end_time": "07:00"
+      },
+      "updated_at": "2026-05-20T23:59:10.505Z",
+      "source": "flightaware_aeroapi",
+      "normalized_status": "unavailable",
+      "error": {
+        "message": "FlightAware HTTP 400",
+        "status": 400,
+        "retry_after": null
+      }
+    },
+    "2026-05-22|AD2613|VCP|FLN|08:50": {
+      "key": "2026-05-22|AD2613|VCP|FLN|08:50",
+      "roster": {
+        "date": "2026-05-22",
+        "label": "AD2613",
+        "flight": "AD2613",
+        "ident_icao": "AZU2613",
+        "from": "VCP",
+        "to": "FLN",
+        "start_time": "08:50",
+        "end_time": "10:05"
+      },
+      "updated_at": "2026-05-20T23:59:10.505Z",
+      "source": "flightaware_aeroapi",
+      "normalized_status": "unavailable",
+      "error": {
+        "message": "FlightAware HTTP 400",
+        "status": 400,
+        "retry_after": null
+      }
     }
   }
 }
