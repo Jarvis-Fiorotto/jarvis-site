@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-20T23:59:10.505Z",
+  "updated_at": "2026-05-21T12:27:40.264Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,15 +13,16 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 74
+    "queries": 78
   },
   "last_run": {
-    "queries": 3,
-    "candidates": 3,
+    "queries": 4,
+    "candidates": 4,
     "logs": [
       "updated 2026-05-21|AD4173|VCP|GIG|11:45",
-      "error 2026-05-22|AD4450|GIG|VCP|05:45: FlightAware HTTP 400",
-      "error 2026-05-22|AD2613|VCP|FLN|08:50: FlightAware HTTP 400"
+      "updated 2026-05-22|AD4450|GIG|VCP|05:45",
+      "updated 2026-05-22|AD2613|VCP|FLN|08:50",
+      "updated 2026-05-22|AD4483|FLN|VCP|10:45"
     ]
   },
   "flights": {
@@ -505,7 +506,7 @@
         "start_time": "11:45",
         "end_time": "12:50"
       },
-      "updated_at": "2026-05-20T23:59:10.505Z",
+      "updated_at": "2026-05-21T12:27:40.264Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4173",
       "ident_icao": "AZU4173",
@@ -521,11 +522,11 @@
       "scheduled_off": "2026-05-21T14:55:00Z",
       "estimated_off": "2026-05-21T14:55:00Z",
       "actual_off": null,
-      "scheduled_on": "2026-05-21T15:40:00Z",
-      "estimated_on": "2026-05-21T15:40:00Z",
+      "scheduled_on": "2026-05-21T15:35:00Z",
+      "estimated_on": "2026-05-21T15:35:00Z",
       "actual_on": null,
       "scheduled_in": "2026-05-21T15:50:00Z",
-      "estimated_in": "2026-05-21T15:50:00Z",
+      "estimated_in": "2026-05-21T15:45:00Z",
       "actual_in": null,
       "terminal_origin": null,
       "terminal_destination": "2",
@@ -544,14 +545,32 @@
         "start_time": "05:45",
         "end_time": "07:00"
       },
-      "updated_at": "2026-05-20T23:59:10.505Z",
+      "updated_at": "2026-05-21T12:27:40.264Z",
       "source": "flightaware_aeroapi",
-      "normalized_status": "unavailable",
-      "error": {
-        "message": "FlightAware HTTP 400",
-        "status": 400,
-        "retry_after": null
-      }
+      "ident": "AZU4450",
+      "ident_icao": "AZU4450",
+      "ident_iata": "AD4450",
+      "fa_flight_id": "AZU4450-1779254531-airline-1103p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "GIG",
+      "destination": "VCP",
+      "scheduled_out": "2026-05-22T08:45:00Z",
+      "estimated_out": "2026-05-22T08:45:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-22T08:55:00Z",
+      "estimated_off": "2026-05-22T08:55:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-22T09:50:00Z",
+      "estimated_on": "2026-05-22T09:50:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-22T10:00:00Z",
+      "estimated_in": "2026-05-22T10:00:00Z",
+      "actual_in": null,
+      "terminal_origin": "2",
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
     },
     "2026-05-22|AD2613|VCP|FLN|08:50": {
       "key": "2026-05-22|AD2613|VCP|FLN|08:50",
@@ -565,14 +584,71 @@
         "start_time": "08:50",
         "end_time": "10:05"
       },
-      "updated_at": "2026-05-20T23:59:10.505Z",
+      "updated_at": "2026-05-21T12:27:40.264Z",
       "source": "flightaware_aeroapi",
-      "normalized_status": "unavailable",
-      "error": {
-        "message": "FlightAware HTTP 400",
-        "status": 400,
-        "retry_after": null
-      }
+      "ident": "AZU2613",
+      "ident_icao": "AZU2613",
+      "ident_iata": "AD2613",
+      "fa_flight_id": "AZU2613-1779262250-airline-1039p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "VCP",
+      "destination": "FLN",
+      "scheduled_out": "2026-05-22T11:50:00Z",
+      "estimated_out": "2026-05-22T11:50:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-22T12:00:00Z",
+      "estimated_off": "2026-05-22T12:00:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-22T12:55:00Z",
+      "estimated_on": "2026-05-22T12:55:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-22T13:05:00Z",
+      "estimated_in": "2026-05-22T13:05:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
+    },
+    "2026-05-22|AD4483|FLN|VCP|10:45": {
+      "key": "2026-05-22|AD4483|FLN|VCP|10:45",
+      "roster": {
+        "date": "2026-05-22",
+        "label": "AD4483",
+        "flight": "AD4483",
+        "ident_icao": "AZU4483",
+        "from": "FLN",
+        "to": "VCP",
+        "start_time": "10:45",
+        "end_time": "12:00"
+      },
+      "updated_at": "2026-05-21T12:27:40.264Z",
+      "source": "flightaware_aeroapi",
+      "ident": "AZU4483",
+      "ident_icao": "AZU4483",
+      "ident_iata": "AD4483",
+      "fa_flight_id": "AZU4483-1779254531-airline-1118p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "FLN",
+      "destination": "VCP",
+      "scheduled_out": "2026-05-22T13:45:00Z",
+      "estimated_out": "2026-05-22T13:45:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-22T13:55:00Z",
+      "estimated_off": "2026-05-22T13:55:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-22T14:50:00Z",
+      "estimated_on": "2026-05-22T14:50:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-22T15:00:00Z",
+      "estimated_in": "2026-05-22T15:00:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
     }
   }
 }
