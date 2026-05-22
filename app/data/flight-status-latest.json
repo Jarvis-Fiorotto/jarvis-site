@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-22T17:29:50.707Z",
+  "updated_at": "2026-05-22T21:46:14.256Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -16,12 +16,9 @@
     "queries": 90
   },
   "last_run": {
-    "queries": 2,
-    "candidates": 2,
-    "logs": [
-      "updated 2026-05-22|AD2613|VCP|FLN|08:50",
-      "updated 2026-05-22|AD4483|FLN|VCP|10:45"
-    ]
+    "queries": 0,
+    "candidates": 0,
+    "logs": []
   },
   "flights": {
     "2026-05-08|AD4023|CWB|GIG|17:25": {
