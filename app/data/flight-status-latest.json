@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-21T23:35:10.486Z",
+  "updated_at": "2026-05-22T10:38:18.313Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,7 +13,7 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 85
+    "queries": 88
   },
   "last_run": {
     "queries": 3,
@@ -544,31 +544,31 @@
         "start_time": "05:45",
         "end_time": "07:00"
       },
-      "updated_at": "2026-05-21T23:35:10.486Z",
+      "updated_at": "2026-05-22T10:38:18.313Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4450",
       "ident_icao": "AZU4450",
       "ident_iata": "AD4450",
       "fa_flight_id": "AZU4450-1779254531-airline-1103p",
-      "status": "Scheduled",
-      "normalized_status": "scheduled",
+      "status": "Arrived / Gate Arrival",
+      "normalized_status": "landed",
       "origin": "GIG",
       "destination": "VCP",
       "scheduled_out": "2026-05-22T08:45:00Z",
       "estimated_out": "2026-05-22T08:45:00Z",
-      "actual_out": null,
+      "actual_out": "2026-05-22T08:39:00Z",
       "scheduled_off": "2026-05-22T08:55:00Z",
-      "estimated_off": "2026-05-22T08:55:00Z",
-      "actual_off": null,
-      "scheduled_on": "2026-05-22T09:50:00Z",
-      "estimated_on": "2026-05-22T09:50:00Z",
-      "actual_on": null,
+      "estimated_off": "2026-05-22T08:51:14Z",
+      "actual_off": "2026-05-22T08:51:14Z",
+      "scheduled_on": "2026-05-22T09:49:00Z",
+      "estimated_on": "2026-05-22T09:47:54Z",
+      "actual_on": "2026-05-22T09:47:54Z",
       "scheduled_in": "2026-05-22T10:00:00Z",
-      "estimated_in": "2026-05-22T10:00:00Z",
-      "actual_in": null,
+      "estimated_in": "2026-05-22T09:56:37Z",
+      "actual_in": "2026-05-22T09:53:00Z",
       "terminal_origin": "2",
       "terminal_destination": null,
-      "gate_origin": null,
+      "gate_origin": "B29",
       "gate_destination": null
     },
     "2026-05-22|AD2613|VCP|FLN|08:50": {
@@ -583,7 +583,7 @@
         "start_time": "08:50",
         "end_time": "10:05"
       },
-      "updated_at": "2026-05-21T23:35:10.486Z",
+      "updated_at": "2026-05-22T10:38:18.313Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU2613",
       "ident_icao": "AZU2613",
@@ -622,7 +622,7 @@
         "start_time": "10:45",
         "end_time": "12:00"
       },
-      "updated_at": "2026-05-21T23:35:10.486Z",
+      "updated_at": "2026-05-22T10:38:18.313Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU4483",
       "ident_icao": "AZU4483",
