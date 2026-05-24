@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-24T20:16:09.215Z",
+  "updated_at": "2026-05-24T23:46:01.678Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,12 +13,14 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 90
+    "queries": 91
   },
   "last_run": {
-    "queries": 0,
-    "candidates": 0,
-    "logs": []
+    "queries": 1,
+    "candidates": 1,
+    "logs": [
+      "error 2026-05-26|AD2998|VCP|BPS|06:25: FlightAware HTTP 400"
+    ]
   },
   "flights": {
     "2026-05-08|AD4023|CWB|GIG|17:25": {
@@ -644,6 +646,27 @@
       "terminal_destination": null,
       "gate_origin": null,
       "gate_destination": null
+    },
+    "2026-05-26|AD2998|VCP|BPS|06:25": {
+      "key": "2026-05-26|AD2998|VCP|BPS|06:25",
+      "roster": {
+        "date": "2026-05-26",
+        "label": "AD2998",
+        "flight": "AD2998",
+        "ident_icao": "AZU2998",
+        "from": "VCP",
+        "to": "BPS",
+        "start_time": "06:25",
+        "end_time": "08:25"
+      },
+      "updated_at": "2026-05-24T23:46:01.678Z",
+      "source": "flightaware_aeroapi",
+      "normalized_status": "unavailable",
+      "error": {
+        "message": "FlightAware HTTP 400",
+        "status": 400,
+        "retry_after": null
+      }
     }
   }
 }
