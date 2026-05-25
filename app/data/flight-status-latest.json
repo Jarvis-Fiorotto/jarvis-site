@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-24T23:46:01.678Z",
+  "updated_at": "2026-05-25T12:51:36.013Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,13 +13,15 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 91
+    "queries": 94
   },
   "last_run": {
-    "queries": 1,
-    "candidates": 1,
+    "queries": 3,
+    "candidates": 3,
     "logs": [
-      "error 2026-05-26|AD2998|VCP|BPS|06:25: FlightAware HTTP 400"
+      "updated 2026-05-26|AD2998|VCP|BPS|06:25",
+      "updated 2026-05-26|AD2999|BPS|VCP|09:00",
+      "updated 2026-05-26|AD2607|VCP|CNF|12:10"
     ]
   },
   "flights": {
@@ -659,14 +661,110 @@
         "start_time": "06:25",
         "end_time": "08:25"
       },
-      "updated_at": "2026-05-24T23:46:01.678Z",
+      "updated_at": "2026-05-25T12:51:36.013Z",
       "source": "flightaware_aeroapi",
-      "normalized_status": "unavailable",
-      "error": {
-        "message": "FlightAware HTTP 400",
-        "status": 400,
-        "retry_after": null
-      }
+      "ident": "AZU2998",
+      "ident_icao": "AZU2998",
+      "ident_iata": "AD2998",
+      "fa_flight_id": "AZU2998-1779605935-airline-226p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "VCP",
+      "destination": "BPS",
+      "scheduled_out": "2026-05-26T09:25:00Z",
+      "estimated_out": "2026-05-26T09:25:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-26T09:35:00Z",
+      "estimated_off": "2026-05-26T09:35:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-26T11:15:00Z",
+      "estimated_on": "2026-05-26T11:15:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-26T11:25:00Z",
+      "estimated_in": "2026-05-26T11:25:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
+    },
+    "2026-05-26|AD2999|BPS|VCP|09:00": {
+      "key": "2026-05-26|AD2999|BPS|VCP|09:00",
+      "roster": {
+        "date": "2026-05-26",
+        "label": "AD2999",
+        "flight": "AD2999",
+        "ident_icao": "AZU2999",
+        "from": "BPS",
+        "to": "VCP",
+        "start_time": "09:00",
+        "end_time": "11:05"
+      },
+      "updated_at": "2026-05-25T12:51:36.013Z",
+      "source": "flightaware_aeroapi",
+      "ident": "AZU2999",
+      "ident_icao": "AZU2999",
+      "ident_iata": "AD2999",
+      "fa_flight_id": "AZU2999-1779605935-airline-227p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "BPS",
+      "destination": "VCP",
+      "scheduled_out": "2026-05-26T12:00:00Z",
+      "estimated_out": "2026-05-26T12:00:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-26T12:10:00Z",
+      "estimated_off": "2026-05-26T12:10:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-26T13:55:00Z",
+      "estimated_on": "2026-05-26T13:55:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-26T14:05:00Z",
+      "estimated_in": "2026-05-26T14:05:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
+    },
+    "2026-05-26|AD2607|VCP|CNF|12:10": {
+      "key": "2026-05-26|AD2607|VCP|CNF|12:10",
+      "roster": {
+        "date": "2026-05-26",
+        "label": "AD2607",
+        "flight": "AD2607",
+        "ident_icao": "AZU2607",
+        "from": "VCP",
+        "to": "CNF",
+        "start_time": "12:10",
+        "end_time": "13:20"
+      },
+      "updated_at": "2026-05-25T12:51:36.013Z",
+      "source": "flightaware_aeroapi",
+      "ident": "AZU2607",
+      "ident_icao": "AZU2607",
+      "ident_iata": "AD2607",
+      "fa_flight_id": "AZU2607-1779601968-airline-968p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "VCP",
+      "destination": "CNF",
+      "scheduled_out": "2026-05-26T15:10:00Z",
+      "estimated_out": "2026-05-26T15:10:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-26T15:20:00Z",
+      "estimated_off": "2026-05-26T15:20:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-26T16:10:00Z",
+      "estimated_on": "2026-05-26T16:10:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-26T16:20:00Z",
+      "estimated_in": "2026-05-26T16:20:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
     }
   }
 }
