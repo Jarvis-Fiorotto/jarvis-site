@@ -273,14 +273,7 @@ function lidoEnabled() {
   return process.env.LIDO_BRIEFING_ENABLED === '1';
 }
 
-function fetchLidoBriefing(event) {
-  if (!lidoEnabled()) {
-    return {
-      status: 'disabled',
-      url: 'https://azu.lido.aero',
-      notes: 'Lido desativado neste ambiente; habilitar com LIDO_BRIEFING_ENABLED=1 em execução local segura.'
-    };
-  }
+function runLidoFetch(event) {
   const scriptPath = path.join(ROOT, '..', 'scripts', 'lido-fetch-briefing.mjs');
   const flightNumber = stripDeadhead(event.flight_number || event.label).replace(/^[A-Z]{2,3}/i, '').replace(/\D/g, '');
   const result = spawnSync('node', [scriptPath], {
@@ -299,16 +292,61 @@ function fetchLidoBriefing(event) {
   const text = result.stdout?.trim() || '';
   let parsed = null;
   try { parsed = text ? JSON.parse(text) : null; } catch {}
-  if (result.status === 0 && parsed) return parsed;
+  return { result, text, parsed };
+}
+
+function runLidoReauth() {
+  if (process.env.LIDO_AUTO_REAUTH === '0') return { skipped: true };
+  const scriptPath = path.join(ROOT, '..', 'scripts', 'lido-reauth.mjs');
+  const result = spawnSync('node', [scriptPath], {
+    cwd: path.join(ROOT, '..'),
+    encoding: 'utf8',
+    timeout: Number(process.env.LIDO_REAUTH_TIMEOUT_MS || 90000),
+    env: process.env
+  });
+  const text = result.stdout?.trim() || '';
+  let parsed = null;
+  try { parsed = text ? JSON.parse(text) : null; } catch {}
+  return { result, text, parsed };
+}
+
+function formatLidoFailure(attempt, reauth = null) {
+  const { result, text, parsed } = attempt;
   return {
     source: 'lido',
     status: parsed?.status || 'error',
     reason: parsed?.detail || result.error?.message || result.stderr?.slice(0, 500) || text.slice(0, 500) || `exit_${result.status}`,
+    reauth: reauth?.parsed ? { status: reauth.parsed.status, reason: reauth.parsed.reason, cdpPort: reauth.parsed.cdpPort } : undefined,
     url: 'https://azu.lido.aero'
   };
 }
 
+function fetchLidoBriefing(event) {
+  if (!lidoEnabled()) {
+    return {
+      status: 'disabled',
+      url: 'https://azu.lido.aero',
+      notes: 'Lido desativado neste ambiente; habilitar com LIDO_BRIEFING_ENABLED=1 em execução local segura.'
+    };
+  }
+  const first = runLidoFetch(event);
+  if (first.result.status === 0 && first.parsed) return first.parsed;
+
+  if (first.parsed?.status === 'auth_required') {
+    const reauth = runLidoReauth();
+    if (reauth.parsed?.status === 'ok') {
+      const retry = runLidoFetch(event);
+      if (retry.result.status === 0 && retry.parsed) return { ...retry.parsed, reauth: { status: 'ok', reason: reauth.parsed.reason, cdpPort: reauth.parsed.cdpPort } };
+      return formatLidoFailure(retry, reauth);
+    }
+    return formatLidoFailure(first, reauth);
+  }
+
+  return formatLidoFailure(first);
+}
+
 function shouldRefresh(cached, event, at) {
+  if (process.env.FLIGHT_BRIEFING_FORCE_REFRESH === '1') return true;
   if (!cached?.updated_at) return true;
   const ageMinutes = (at.getTime() - new Date(cached.updated_at).getTime()) / 60000;
   const minutesToDeparture = (eventStart(event).getTime() - at.getTime()) / 60000;

@@ -431,9 +431,31 @@ export function newAgendaEvent(input: {
 
 export function groupOccurrencesByDay(occurrences: AgendaOccurrence[]) {
   return occurrences.reduce<Record<string, AgendaOccurrence[]>>((acc, occurrence) => {
-    const key = dateKey(new Date(occurrence.startsAt));
-    acc[key] ||= [];
-    acc[key].push(occurrence);
+    const eventStart = new Date(occurrence.startsAt);
+    const eventEnd = new Date(occurrence.endsAt);
+    let cursor = startOfSaoPauloDay(dateKey(eventStart));
+    let guard = 0;
+
+    while (cursor < eventEnd && guard < 370) {
+      const key = dateKey(cursor);
+      const dayStart = startOfSaoPauloDay(key);
+      const dayEnd = endOfSaoPauloDay(key);
+      const segmentStart = new Date(Math.max(eventStart.getTime(), dayStart.getTime()));
+      const segmentEnd = new Date(Math.min(eventEnd.getTime(), dayEnd.getTime()));
+
+      if (segmentEnd > segmentStart) {
+        acc[key] ||= [];
+        acc[key].push({
+          ...occurrence,
+          startsAt: segmentStart.toISOString(),
+          endsAt: segmentEnd.toISOString(),
+          occurrenceId: `${occurrence.occurrenceId}:${key}`
+        });
+      }
+
+      cursor = addDays(dayStart, 1);
+      guard += 1;
+    }
     return acc;
   }, {});
 }

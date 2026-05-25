@@ -8,6 +8,10 @@ import { loadRuntimeDocument } from "../lib/runtime-data";
 
 export const dynamic = "force-dynamic";
 
+type PageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
 type RosterEvent = {
   id: string;
   date: string;
@@ -80,6 +84,21 @@ type HotelReservation = {
 };
 
 type HotelData = { source: string; generated_at: string; count: number; reservations: HotelReservation[]; by_date?: Record<string, HotelReservation[]> };
+
+type HotelWeather = {
+  status: "ok" | "unavailable" | "out_of_range";
+  source: string;
+  location: string;
+  date: string;
+  summary?: string;
+  icon?: string;
+  tempMin?: number | null;
+  tempMax?: number | null;
+  precipitationProbability?: number | null;
+  precipitationMm?: number | null;
+  windKmh?: number | null;
+  reason?: string;
+};
 
 type FlightStatus = {
   key: string;
@@ -197,6 +216,46 @@ const AIRPORTS: Record<string, string> = {
   LIS: "Lisboa"
 };
 
+const HOTEL_WEATHER_LOCATIONS: Record<string, { name: string; latitude: number; longitude: number }> = {
+  VCP: { name: "Campinas", latitude: -23.0074, longitude: -47.1345 },
+  CGH: { name: "São Paulo", latitude: -23.6261, longitude: -46.6564 },
+  GRU: { name: "Guarulhos", latitude: -23.4356, longitude: -46.4731 },
+  SDU: { name: "Rio de Janeiro", latitude: -22.91, longitude: -43.1631 },
+  GIG: { name: "Rio de Janeiro", latitude: -22.8099, longitude: -43.2506 },
+  CNF: { name: "Confins / Belo Horizonte", latitude: -19.6338, longitude: -43.9689 },
+  CWB: { name: "São José dos Pinhais / Curitiba", latitude: -25.5285, longitude: -49.1758 },
+  BSB: { name: "Brasília", latitude: -15.8711, longitude: -47.9186 },
+  POA: { name: "Porto Alegre", latitude: -29.9939, longitude: -51.1711 },
+  REC: { name: "Recife", latitude: -8.1265, longitude: -34.9236 },
+  SSA: { name: "Salvador", latitude: -12.9086, longitude: -38.3225 },
+  FOR: { name: "Fortaleza", latitude: -3.7763, longitude: -38.5326 },
+  FLN: { name: "Florianópolis", latitude: -27.6703, longitude: -48.5525 },
+  IGU: { name: "Foz do Iguaçu", latitude: -25.6003, longitude: -54.4850 },
+  MCO: { name: "Orlando", latitude: 28.4312, longitude: -81.3081 },
+  LIS: { name: "Lisboa", latitude: 38.7742, longitude: -9.1342 }
+};
+
+const WEATHER_CODE_LABELS: Record<number, { icon: string; label: string }> = {
+  0: { icon: "☀️", label: "céu limpo" },
+  1: { icon: "🌤️", label: "predomínio de sol" },
+  2: { icon: "⛅", label: "parcialmente nublado" },
+  3: { icon: "☁️", label: "nublado" },
+  45: { icon: "🌫️", label: "nevoeiro" },
+  48: { icon: "🌫️", label: "nevoeiro com geada" },
+  51: { icon: "🌦️", label: "garoa fraca" },
+  53: { icon: "🌦️", label: "garoa" },
+  55: { icon: "🌧️", label: "garoa forte" },
+  61: { icon: "🌦️", label: "chuva fraca" },
+  63: { icon: "🌧️", label: "chuva" },
+  65: { icon: "🌧️", label: "chuva forte" },
+  80: { icon: "🌦️", label: "pancadas fracas" },
+  81: { icon: "🌧️", label: "pancadas de chuva" },
+  82: { icon: "⛈️", label: "pancadas fortes" },
+  95: { icon: "⛈️", label: "trovoadas" },
+  96: { icon: "⛈️", label: "trovoadas com granizo" },
+  99: { icon: "⛈️", label: "trovoadas severas" }
+};
+
 function airportName(code?: string | null) {
   if (!code) return "—";
   return AIRPORTS[code] || code;
@@ -206,6 +265,139 @@ function airportLabel(code?: string | null) {
   if (!code) return "—";
   const name = airportName(code);
   return name === code ? code : `${name} (${code})`;
+}
+
+function hotelWeatherLocation(reservation: HotelReservation) {
+  return HOTEL_WEATHER_LOCATIONS[reservation.airport] || null;
+}
+
+function weatherLabel(code?: number | null) {
+  if (code === null || code === undefined) return { icon: "🌡️", label: "previsão disponível" };
+  return WEATHER_CODE_LABELS[code] || { icon: "🌡️", label: "previsão disponível" };
+}
+
+function roundWeatherValue(value?: number | null) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : null;
+}
+
+async function fetchHotelWeather(reservation: HotelReservation): Promise<HotelWeather> {
+  const date = reservation.date_iso;
+  const location = hotelWeatherLocation(reservation);
+  if (!date || !location) {
+    return {
+      status: "unavailable",
+      source: "Open-Meteo",
+      location: reservation.city || airportName(reservation.airport),
+      date: date || "—",
+      reason: "localidade sem coordenadas mapeadas"
+    };
+  }
+
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+
+  if (date < today) {
+    return {
+      status: "out_of_range",
+      source: "Open-Meteo",
+      location: location.name,
+      date,
+      reason: "previsão histórica não exibida"
+    };
+  }
+
+  try {
+    const endpoint = new URL("https://api.open-meteo.com/v1/forecast");
+    endpoint.searchParams.set("latitude", String(location.latitude));
+    endpoint.searchParams.set("longitude", String(location.longitude));
+    endpoint.searchParams.set("timezone", "America/Sao_Paulo");
+    endpoint.searchParams.set("start_date", date);
+    endpoint.searchParams.set("end_date", date);
+    endpoint.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max");
+
+    const response = await fetch(endpoint, { next: { revalidate: 60 * 60 * 6 } });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json() as {
+      daily?: {
+        time?: string[];
+        weather_code?: number[];
+        temperature_2m_max?: number[];
+        temperature_2m_min?: number[];
+        precipitation_probability_max?: number[];
+        precipitation_sum?: number[];
+        wind_speed_10m_max?: number[];
+      };
+    };
+    const index = payload.daily?.time?.indexOf(date) ?? -1;
+    if (index < 0) {
+      return { status: "out_of_range", source: "Open-Meteo", location: location.name, date, reason: "fora da janela de previsão" };
+    }
+    const code = payload.daily?.weather_code?.[index] ?? null;
+    const label = weatherLabel(code);
+    return {
+      status: "ok",
+      source: "Open-Meteo",
+      location: location.name,
+      date,
+      icon: label.icon,
+      summary: label.label,
+      tempMax: roundWeatherValue(payload.daily?.temperature_2m_max?.[index]),
+      tempMin: roundWeatherValue(payload.daily?.temperature_2m_min?.[index]),
+      precipitationProbability: roundWeatherValue(payload.daily?.precipitation_probability_max?.[index]),
+      precipitationMm: payload.daily?.precipitation_sum?.[index] ?? null,
+      windKmh: roundWeatherValue(payload.daily?.wind_speed_10m_max?.[index])
+    };
+  } catch (error) {
+    return {
+      status: "unavailable",
+      source: "Open-Meteo",
+      location: location.name,
+      date,
+      reason: error instanceof Error ? error.message : "provider indisponível"
+    };
+  }
+}
+
+async function hotelWeatherByKey(reservations: HotelReservation[]) {
+  const unique = new Map<string, HotelReservation>();
+  for (const reservation of reservations) {
+    const date = reservation.date_iso;
+    if (!date) continue;
+    const key = `${reservation.airport}-${date}`;
+    if (!unique.has(key)) unique.set(key, reservation);
+  }
+  const entries = await Promise.all([...unique.entries()].map(async ([key, reservation]) => [key, await fetchHotelWeather(reservation)] as const));
+  return Object.fromEntries(entries) as Record<string, HotelWeather>;
+}
+
+function hotelWeatherKey(reservation: HotelReservation) {
+  return `${reservation.airport}-${reservation.date_iso || ""}`;
+}
+
+function HotelWeatherLine({ weather }: { weather?: HotelWeather }) {
+  if (!weather) return null;
+  if (weather.status !== "ok") {
+    return <small className="hotelWeather muted">🌡️ Meteo {weather.location}: {weather.reason || "indisponível"}</small>;
+  }
+  const rain = weather.precipitationProbability !== null && weather.precipitationProbability !== undefined
+    ? ` · chuva ${weather.precipitationProbability}%`
+    : "";
+  const precipitation = weather.precipitationMm !== null && weather.precipitationMm !== undefined && weather.precipitationMm > 0
+    ? ` / ${weather.precipitationMm.toFixed(1)} mm`
+    : "";
+  const wind = weather.windKmh !== null && weather.windKmh !== undefined ? ` · vento ${weather.windKmh} km/h` : "";
+  const temp = weather.tempMin !== null && weather.tempMin !== undefined && weather.tempMax !== null && weather.tempMax !== undefined
+    ? ` · ${weather.tempMin}°/${weather.tempMax}°C`
+    : "";
+  return (
+    <small className="hotelWeather">
+      <b>{weather.icon} Meteo {weather.location}</b>: {weather.summary}{temp}{rain}{precipitation}{wind}
+    </small>
+  );
 }
 
 function airportRoute(from?: string | null, to?: string | null, withCodes = true) {
@@ -521,6 +713,15 @@ function runtimeUpdatedLabel(value?: string | null) {
   }).format(date)}`;
 }
 
+function dashboardMessage(searchParams: Record<string, string | string[] | undefined>) {
+  const refresh = typeof searchParams.roster_refresh === "string" ? searchParams.roster_refresh : "";
+  const error = typeof searchParams.error === "string" ? searchParams.error : "";
+  if (refresh === "queued") return "Atualização da escala solicitada. Aguarde alguns instantes e recarregue a página.";
+  if (refresh === "failed") return "Não consegui enfileirar a atualização da escala. Verifique a configuração do Supabase.";
+  if (error === "forbidden") return "Ação restrita ao Danilo/JARVIS.";
+  return null;
+}
+
 function shortAirport(event: RosterEvent) {
   return airportRoute(event.from, event.to);
 }
@@ -784,9 +985,11 @@ function latestBriefedFlight() {
     .find((event) => new Date(event.end_local) >= new Date()) || flightEvents.at(-1) || null;
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }: PageProps) {
   const user = await currentUser();
   if (!user) redirect("/login");
+  const params = searchParams ? await searchParams : {};
+  const message = dashboardMessage(params);
 
   const canViewBriefing = hasModule(user, "briefing");
   const canViewAgenda = hasModule(user, "agenda");
@@ -795,6 +998,7 @@ export default async function Home() {
   const canViewAdmin = isAdmin(user);
 
   await hydrateRuntimeData();
+  const hotelWeather = await hotelWeatherByKey(hotelReservations);
 
   const grouped = groupByDay(events);
   const todayKey = new Intl.DateTimeFormat("en-CA", {
@@ -860,8 +1064,15 @@ export default async function Home() {
             <div className="statusChip">Dados: {dataSourceLabel} · {runtimeUpdatedLabel(dataUpdatedAt)}</div>
             {pendingRosterChanges.length > 0 && <div className="statusChip warning">⚠️ {pendingRosterChanges.length} alteração(ões) pendente(s)</div>}
             <div className="periodChip">{monthLabel(monthStart)} · {shortDate.format(parseDate(monthStart))}–{shortDate.format(parseDate(monthEnd))}</div>
+            {canViewAdmin && (
+              <form action="/api/roster/refresh" method="post" className="inlineForm">
+                <button className="ghostButton" type="submit">Atualizar escala</button>
+              </form>
+            )}
           </div>
         </header>
+
+        {message && <section className="panelCard"><p>{message}</p></section>}
 
         {pendingRosterChanges.length > 0 && (
           <section className="pendingRosterBanner">
@@ -904,6 +1115,7 @@ export default async function Home() {
                   <div className="dayHotelItem" key={`${reservation.airport}-${reservation.date}-${reservation.hotel?.name}`}>
                     <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
                     <span>{reservation.hotel?.address || reservation.city}</span>
+                    <HotelWeatherLine weather={hotelWeather[hotelWeatherKey(reservation)]} />
                     {overnightText(reservation) && (
                       <small className="overnightWindow">
                         {overnightText(reservation)}
@@ -1024,6 +1236,7 @@ export default async function Home() {
                       {dayHotels.map(({ reservation, transports }) => (
                         <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
                           <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
+                          <HotelWeatherLine weather={hotelWeather[hotelWeatherKey(reservation)]} />
                           {overnightText(reservation) && (
                             <span className="overnightWindow">
                               {overnightText(reservation)}
@@ -1086,6 +1299,7 @@ export default async function Home() {
                           {dayHotels.map(({ reservation, transports }) => (
                             <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
                               <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
+                              <HotelWeatherLine weather={hotelWeather[hotelWeatherKey(reservation)]} />
                               {transports.map((transport) => (
                                 <span key={`${transport.direction}-${transport.pickup_time}`}>
                                   {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}

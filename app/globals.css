@@ -483,6 +483,18 @@ button { cursor: pointer; }
   font-size: 13px;
 }
 .embeddedHotel strong { color: var(--orange); }
+.hotelWeather {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(62, 231, 255, .18);
+  background: rgba(62, 231, 255, .075);
+  color: var(--text) !important;
+  font-weight: 700;
+}
+.hotelWeather b {
+  color: var(--cyan);
+}
 .pastTrips {
   margin-top: 18px;
   border: 1px solid rgba(255,255,255,.10);
@@ -665,6 +677,42 @@ button { cursor: pointer; }
   color: #06101c;
   font-weight: 950;
 }
+.editModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  place-items: center;
+  padding: 22px;
+}
+.editModal:target { display: grid; }
+.editModalBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 8, 16, .74);
+  backdrop-filter: blur(8px);
+}
+.editModalCard {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  max-height: min(88vh, 900px);
+  overflow: auto;
+  margin: 0;
+  background: rgba(8, 18, 31, .96);
+}
+.editModalHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.editModalHeader h2 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -.04em;
+}
 @media (max-width: 760px) {
   .agendaShell { width: min(100% - 24px, 1180px); padding-top: 18px; }
   .agendaShell .dashboardHeader, .agendaShell .sectionTitle { display: grid; grid-template-columns: 1fr; align-items: start; }
@@ -672,6 +720,8 @@ button { cursor: pointer; }
   .panelCard { padding: 16px; border-radius: 22px; }
   .formGrid, .formGrid.twoColumns { grid-template-columns: 1fr; }
   .primaryButton { width: 100%; }
+  .editModal { padding: 12px; }
+  .editModalHeader { display: grid; }
   .eventTopline { flex-direction: column; }
   .actionRow .ghostButton, .actionRow form, .actionRow button { width: 100%; text-align: center; justify-content: center; }
 }

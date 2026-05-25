@@ -89,6 +89,7 @@ function messageFor(searchParams: Record<string, string | string[] | undefined>)
   if (ok === "pending") return "Solicitação enviada. Danilo/JARVIS precisa aprovar.";
   if (ok === "approved") return "Evento aprovado.";
   if (ok === "rejected") return "Evento rejeitado.";
+  if (ok === "updated") return "Evento atualizado.";
   if (ok === "reminder") return "Lembretes atualizados.";
   if (error === "busy") return `Horário indisponível${conflict ? `: conflito com ${conflict}` : ""}.`;
   if (error === "forbidden") return "Ação restrita ao Danilo/JARVIS.";
@@ -122,7 +123,76 @@ function minutesInSaoPaulo(iso: string) {
   return hour * 60 + minute;
 }
 
-function EventActions({ event, user, admin }: { event: AgendaOccurrence; user: AppUser; admin: boolean }) {
+function recurrenceDefaults(rule?: string | null) {
+  if (!rule) return { frequency: "none", interval: "1", until: "" };
+  const parts = Object.fromEntries(rule.split(";").map((part) => {
+    const [key, value] = part.split("=");
+    return [key, value];
+  }));
+  const until = parts.UNTIL?.replace(/(\d{4})(\d{2})(\d{2}).*/, "$1-$2-$3") || "";
+  return {
+    frequency: parts.FREQ || "none",
+    interval: parts.INTERVAL || "1",
+    until
+  };
+}
+
+function modalIdFor(event: AgendaOccurrence) {
+  return `edit-${event.occurrenceId.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+}
+
+function EventEditModal({ event, returnTo }: { event: AgendaOccurrence; returnTo: string }) {
+  const recurrence = recurrenceDefaults(event.recurrenceRule);
+  const reminders = new Set(event.reminderMinutesBefore || []);
+  const modalId = modalIdFor(event);
+
+  return (
+    <section className="editModal" id={modalId} role="dialog" aria-modal="true" aria-labelledby={`${modalId}-title`}>
+      <a className="editModalBackdrop" href="#" aria-label="Fechar modal" />
+      <div className="editModalCard panelCard">
+        <div className="editModalHeader">
+          <div>
+            <p className="eyebrow">Editar compromisso</p>
+            <h2 id={`${modalId}-title`}>{event.title}</h2>
+          </div>
+          <a className="ghostButton" href="#">Fechar</a>
+        </div>
+        {event.isOccurrence && <p className="muted">Este evento é recorrente. A edição altera a série inteira.</p>}
+        <form action={`/api/agenda/events/${event.baseEventId}/edit`} method="post" className="agendaForm">
+          <input type="hidden" name="returnTo" value={returnTo} />
+          <label>Nome<input name="title" required maxLength={120} defaultValue={event.title} /></label>
+          <div className="formGrid twoColumns">
+            <label>Início<input name="startsAt" required type="datetime-local" defaultValue={toLocalInputValue(event.originalStartsAt)} /></label>
+            <label>Fim<input name="endsAt" required type="datetime-local" defaultValue={toLocalInputValue(event.originalEndsAt)} /></label>
+          </div>
+          <label>Descrição<textarea name="description" rows={3} defaultValue={event.description || ""} /></label>
+          <label>Endereço<input name="address" defaultValue={event.address || ""} /></label>
+          <div className="formGrid">
+            <label>Recorrência
+              <select name="recurrenceFrequency" defaultValue={recurrence.frequency}>
+                <option value="none">Não repetir</option>
+                <option value="DAILY">Diária</option>
+                <option value="WEEKLY">Semanal</option>
+                <option value="MONTHLY">Mensal</option>
+              </select>
+            </label>
+            <label>Intervalo<input name="recurrenceInterval" type="number" min="1" max="52" defaultValue={recurrence.interval} /></label>
+            <label>Repetir até<input name="recurrenceUntil" type="date" defaultValue={recurrence.until} /></label>
+          </div>
+          <fieldset className="reminderChoices">
+            <legend>Lembretes Discord</legend>
+            <label><input type="checkbox" name="reminderMinutesBefore" value="1440" defaultChecked={reminders.has(1440)} /> 1 dia antes</label>
+            <label><input type="checkbox" name="reminderMinutesBefore" value="60" defaultChecked={reminders.has(60)} /> 1 hora antes</label>
+            <label><input type="checkbox" name="reminderMinutesBefore" value="15" defaultChecked={reminders.has(15)} /> 15 min antes</label>
+          </fieldset>
+          <button className="primaryButton" type="submit">Salvar alterações</button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+function EventActions({ event, user, admin, returnTo }: { event: AgendaOccurrence; user: AppUser; admin: boolean; returnTo: string }) {
   const detailsAllowed = canSeeDetails(user, event);
   const mapUrl = event.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}` : null;
   const icsUrl = `/api/agenda/ics?title=${encodeURIComponent(event.title)}&startsAt=${encodeURIComponent(event.startsAt)}&endsAt=${encodeURIComponent(event.endsAt)}&description=${encodeURIComponent(detailsAllowed ? event.description || "" : "")}&address=${encodeURIComponent(detailsAllowed ? event.address || "" : "")}`;
@@ -142,13 +212,15 @@ function EventActions({ event, user, admin }: { event: AgendaOccurrence; user: A
           <button className="ghostButton" type="submit">Me lembrar</button>
         </form>
       )}
+      {admin && !event.readonly && detailsAllowed && <a className="ghostButton" href={`#${modalIdFor(event)}`}>Editar</a>}
       {detailsAllowed && mapUrl && <a className="ghostButton" href={mapUrl} target="_blank" rel="noreferrer">Mapa</a>}
       <a className="ghostButton" href={icsUrl}>Exportar .ics</a>
+      {admin && !event.readonly && detailsAllowed && <EventEditModal event={event} returnTo={returnTo} />}
     </div>
   );
 }
 
-function EventDetailCard({ event, user, admin }: { event: AgendaOccurrence; user: AppUser; admin: boolean }) {
+function EventDetailCard({ event, user, admin, returnTo }: { event: AgendaOccurrence; user: AppUser; admin: boolean; returnTo: string }) {
   const detailsAllowed = canSeeDetails(user, event);
   return (
     <article className={`calendarDetailCard ${eventTone(event)}`}>
@@ -161,7 +233,7 @@ function EventDetailCard({ event, user, admin }: { event: AgendaOccurrence; user
       {!detailsAllowed && <p className="muted">Detalhes internos restritos.</p>}
       {detailsAllowed && event.address && <p className="muted">{event.address}</p>}
       {event.recurrenceRule && <p className="muted">Recorrente · {event.recurrenceRule}</p>}
-      <EventActions event={event} user={user} admin={admin} />
+      <EventActions event={event} user={user} admin={admin} returnTo={returnTo} />
     </article>
   );
 }
@@ -170,7 +242,7 @@ function compactTitle(title: string) {
   return title.length > 34 ? `${title.slice(0, 31)}…` : title;
 }
 
-function WeekCalendar({ days, groups, today, user, admin }: { days: Date[]; groups: Record<string, AgendaOccurrence[]>; today: string; user: AppUser; admin: boolean }) {
+function WeekCalendar({ days, groups, today, user, admin, returnTo }: { days: Date[]; groups: Record<string, AgendaOccurrence[]>; today: string; user: AppUser; admin: boolean; returnTo: string }) {
   return (
     <section className="calendarBoard weekBoard">
       <div className="weekHeaderSpacer" />
@@ -215,7 +287,7 @@ function WeekCalendar({ days, groups, today, user, admin }: { days: Date[]; grou
           return (
             <section className="dayAgendaStack" key={key}>
               <div className="dayAgendaTitle"><span>{formatAgendaDate(day.toISOString())}</span><strong>{events.length}</strong></div>
-              {events.map((event) => <EventDetailCard event={event} user={user} admin={admin} key={event.occurrenceId} />)}
+              {events.map((event) => <EventDetailCard event={event} user={user} admin={admin} returnTo={returnTo} key={event.occurrenceId} />)}
               {!events.length && <p className="muted">Livre.</p>}
             </section>
           );
@@ -329,6 +401,7 @@ export default async function AgendaPage({ searchParams }: PageProps) {
   const pending = occurrences.filter((event) => event.status === "pending");
   const previousDate = view === "month" ? addMonths(selectedDate, -1) : addDays(selectedDate, -7);
   const nextDate = view === "month" ? addMonths(selectedDate, 1) : addDays(selectedDate, 7);
+  const returnTo = `/agenda?view=${view}&date=${selectedKey}`;
 
   return (
     <main className="agendaShell calendarShell">
@@ -371,7 +444,7 @@ export default async function AgendaPage({ searchParams }: PageProps) {
             <h2>{pending.length} evento(s) pendente(s)</h2>
           </div>
           <div className="pendingList">
-            {pending.map((event) => <EventDetailCard event={event} user={user} admin={admin} key={event.occurrenceId} />)}
+            {pending.map((event) => <EventDetailCard event={event} user={user} admin={admin} returnTo={returnTo} key={event.occurrenceId} />)}
           </div>
         </section>
       )}
@@ -379,7 +452,7 @@ export default async function AgendaPage({ searchParams }: PageProps) {
       {view === "month" ? (
         <MonthCalendar selectedDate={selectedDate} occurrences={occurrences} groups={groups} today={today} />
       ) : (
-        <WeekCalendar days={weekDays} groups={groups} today={today} user={user} admin={admin} />
+        <WeekCalendar days={weekDays} groups={groups} today={today} user={user} admin={admin} returnTo={returnTo} />
       )}
     </main>
   );
