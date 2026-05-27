@@ -1,21 +1,19 @@
 {
-  "updated_at": "2026-05-27T15:25:18.680Z",
+  "updated_at": "2026-05-27T20:37:44.151Z",
   "provider": "aviationweather.gov",
   "status": "partial_until_lido_enabled",
   "limits": {
-    "lookaheadMinutes": 75,
-    "lookbackMinutes": 0,
+    "lookaheadMinutes": 60,
+    "lookbackMinutes": 30,
     "maxFlightsPerRun": 4,
     "refreshMinutes": 60,
     "requestTimeoutMs": 12000,
     "liveWeatherMaxAgeMinutes": 90
   },
   "last_run": {
-    "queries": 4,
-    "candidates": 1,
-    "logs": [
-      "updated 2026-05-27|AD2805|VCP|REC|13:25"
-    ]
+    "queries": 0,
+    "candidates": 0,
+    "logs": []
   },
   "briefings": {
     "2026-05-10|AD4546|VCP|CWB|19:15": {
