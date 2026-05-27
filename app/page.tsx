@@ -802,19 +802,19 @@ function getAgendaItems(todayKey: string, daysAhead = 21) {
 
   const transportItems: AgendaItem[] = hotelReservations.flatMap((reservation) =>
     reservation.transports.map((transport, index) => {
+      if (transport.direction !== "to_airport") return null;
       const sortAt = transportDateTime(transport);
       const date = transport.pickup_date_iso || reservation.date_iso || "";
       if (!sortAt || !date || date < startKey || date > endKey) return null;
-      const isPickup = transport.direction === "to_airport";
       return {
         id: `transport-${reservation.airport}-${date}-${transport.pickup_time}-${index}`,
         sortAt,
-        label: isPickup ? "Esteja pronto para a van" : "Van para o hotel",
+        label: "Esteja pronto para a van",
         date,
         time: transport.pickup_time,
         detail: `${airportLabel(reservation.airport)} · ${transport.company}`,
         category: "Transporte",
-        priority: isPickup ? 0 : 3
+        priority: 0
       };
     }).filter((item): item is AgendaItem => item !== null)
   );
@@ -863,16 +863,16 @@ function getUpcoming() {
     }));
   const transportItems = hotelReservations.flatMap((reservation) =>
     reservation.transports.map((transport) => {
+      if (transport.direction !== "to_airport") return null;
       const sortAt = transportDateTime(transport);
       if (!sortAt) return null;
-      const isPickup = transport.direction === "to_airport";
       return {
         sortAt,
-        label: isPickup ? "Esteja pronto para a van" : "Van para o hotel",
+        label: "Esteja pronto para a van",
         date: transport.pickup_date_iso || reservation.date_iso || "",
         time: transport.pickup_time,
         detail: `${airportLabel(reservation.airport)} · ${transport.company}`,
-        priority: isPickup ? 0 : 3
+        priority: 0
       };
     }).filter((item): item is NonNullable<typeof item> => item !== null)
   );
