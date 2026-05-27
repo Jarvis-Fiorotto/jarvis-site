@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-26T23:43:58.808Z",
+  "updated_at": "2026-05-27T12:38:34.636Z",
   "provider": "FlightAware AeroAPI",
   "limits": {
     "monthlyQueryCap": 300,
@@ -13,14 +13,17 @@
   },
   "usage": {
     "month": "2026-05",
-    "queries": 106
+    "queries": 111
   },
   "last_run": {
-    "queries": 2,
-    "candidates": 2,
+    "queries": 5,
+    "candidates": 5,
     "logs": [
       "updated 2026-05-27|AD8724|CNF|MVD|10:15",
-      "updated 2026-05-27|AD8761|MVD|REC|14:40"
+      "updated 2026-05-27|AD8761|MVD|REC|14:40",
+      "updated 2026-05-28|AD4255|REC|FEN|13:35",
+      "error 2026-05-28|AD4091|FEN|REC|16:30: FlightAware HTTP 400",
+      "error 2026-05-28|AD6085|REC|CGH|17:30: FlightAware HTTP 400"
     ]
   },
   "flights": {
@@ -777,7 +780,7 @@
         "start_time": "10:15",
         "end_time": "13:25"
       },
-      "updated_at": "2026-05-26T23:43:58.808Z",
+      "updated_at": "2026-05-27T12:38:34.636Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU8724",
       "ident_icao": "AZU8724",
@@ -793,15 +796,15 @@
       "scheduled_off": "2026-05-27T13:25:00Z",
       "estimated_off": "2026-05-27T13:25:00Z",
       "actual_off": null,
-      "scheduled_on": "2026-05-27T16:15:00Z",
-      "estimated_on": "2026-05-27T16:15:00Z",
+      "scheduled_on": "2026-05-27T16:28:00Z",
+      "estimated_on": "2026-05-27T16:28:00Z",
       "actual_on": null,
       "scheduled_in": "2026-05-27T16:25:00Z",
-      "estimated_in": "2026-05-27T16:25:00Z",
+      "estimated_in": "2026-05-27T16:38:00Z",
       "actual_in": null,
       "terminal_origin": null,
       "terminal_destination": null,
-      "gate_origin": null,
+      "gate_origin": "61",
       "gate_destination": null
     },
     "2026-05-27|AD8761|MVD|REC|14:40": {
@@ -816,7 +819,7 @@
         "start_time": "14:40",
         "end_time": "19:30"
       },
-      "updated_at": "2026-05-26T23:43:58.808Z",
+      "updated_at": "2026-05-27T12:38:34.636Z",
       "source": "flightaware_aeroapi",
       "ident": "AZU8761",
       "ident_icao": "AZU8761",
@@ -842,6 +845,87 @@
       "terminal_destination": null,
       "gate_origin": null,
       "gate_destination": null
+    },
+    "2026-05-28|AD4255|REC|FEN|13:35": {
+      "key": "2026-05-28|AD4255|REC|FEN|13:35",
+      "roster": {
+        "date": "2026-05-28",
+        "label": "AD4255",
+        "flight": "AD4255",
+        "ident_icao": "AZU4255",
+        "from": "REC",
+        "to": "FEN",
+        "start_time": "13:35",
+        "end_time": "15:50"
+      },
+      "updated_at": "2026-05-27T12:38:34.636Z",
+      "source": "flightaware_aeroapi",
+      "ident": "AZU4255",
+      "ident_icao": "AZU4255",
+      "ident_iata": "AD4255",
+      "fa_flight_id": "AZU4255-1779779385-airline-1413p",
+      "status": "Scheduled",
+      "normalized_status": "scheduled",
+      "origin": "REC",
+      "destination": "FEN",
+      "scheduled_out": "2026-05-28T16:35:00Z",
+      "estimated_out": "2026-05-28T16:35:00Z",
+      "actual_out": null,
+      "scheduled_off": "2026-05-28T16:45:00Z",
+      "estimated_off": "2026-05-28T16:45:00Z",
+      "actual_off": null,
+      "scheduled_on": "2026-05-28T17:40:00Z",
+      "estimated_on": "2026-05-28T17:40:00Z",
+      "actual_on": null,
+      "scheduled_in": "2026-05-28T17:50:00Z",
+      "estimated_in": "2026-05-28T17:50:00Z",
+      "actual_in": null,
+      "terminal_origin": null,
+      "terminal_destination": null,
+      "gate_origin": null,
+      "gate_destination": null
+    },
+    "2026-05-28|AD4091|FEN|REC|16:30": {
+      "key": "2026-05-28|AD4091|FEN|REC|16:30",
+      "roster": {
+        "date": "2026-05-28",
+        "label": "AD4091",
+        "flight": "AD4091",
+        "ident_icao": "AZU4091",
+        "from": "FEN",
+        "to": "REC",
+        "start_time": "16:30",
+        "end_time": "16:45"
+      },
+      "updated_at": "2026-05-27T12:38:34.636Z",
+      "source": "flightaware_aeroapi",
+      "normalized_status": "unavailable",
+      "error": {
+        "message": "FlightAware HTTP 400",
+        "status": 400,
+        "retry_after": null
+      }
+    },
+    "2026-05-28|AD6085|REC|CGH|17:30": {
+      "key": "2026-05-28|AD6085|REC|CGH|17:30",
+      "roster": {
+        "date": "2026-05-28",
+        "label": "AD6085",
+        "flight": "AD6085",
+        "ident_icao": "AZU6085",
+        "from": "REC",
+        "to": "CGH",
+        "start_time": "17:30",
+        "end_time": "21:00"
+      },
+      "updated_at": "2026-05-27T12:38:34.636Z",
+      "source": "flightaware_aeroapi",
+      "normalized_status": "unavailable",
+      "error": {
+        "message": "FlightAware HTTP 400",
+        "status": 400,
+        "retry_after": null
+      }
     }
   }
 }
