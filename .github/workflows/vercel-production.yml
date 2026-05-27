@@ -5,8 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # Atualiza status de voo em janelas espaçadas. O script ainda aplica cache,
-    # limite mensal e no máximo 6 consultas por execução.
+    # Atualiza briefing operacional.
     - cron: "*/30 * * * *"
 
 jobs:
@@ -33,19 +32,6 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      - name: Update flight status cache
-        run: npm run update:flight-status
-        env:
-          FLIGHTAWARE_API_KEY: ${{ secrets.FLIGHTAWARE_API_KEY }}
-          FLIGHTAWARE_MONTHLY_QUERY_CAP: "300"
-          FLIGHTAWARE_MAX_QUERIES_PER_RUN: "6"
-          FLIGHTAWARE_MIN_SECONDS_BETWEEN_QUERIES: "7"
-          FLIGHTAWARE_ACTIVE_REFRESH_MINUTES: "15"
-          FLIGHTAWARE_SCHEDULED_REFRESH_MINUTES: "180"
-          FLIGHTAWARE_COMPLETED_REFRESH_MINUTES: "1440"
-          FLIGHTAWARE_LOOKBACK_HOURS: "8"
-          FLIGHTAWARE_LOOKAHEAD_HOURS: "36"
-
       - name: Update preflight briefing cache
         run: npm run update:flight-briefings
         env:
@@ -54,17 +40,17 @@ jobs:
           FLIGHT_BRIEFING_MAX_FLIGHTS_PER_RUN: "4"
           FLIGHT_BRIEFING_REFRESH_MINUTES: "60"
 
-      - name: Persist flight status cache
+      - name: Persist briefing cache
         if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
         run: |
-          if git diff --quiet -- app/data/flight-status-latest.json app/data/flight-briefing-latest.json; then
-            echo "No flight cache changes."
+          if git diff --quiet -- app/data/flight-briefing-latest.json; then
+            echo "No briefing cache changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app/data/flight-status-latest.json app/data/flight-briefing-latest.json
-          git commit -m "Update flight caches"
+          git add app/data/flight-briefing-latest.json
+          git commit -m "Update flight briefing cache"
           git push
 
       - name: Build

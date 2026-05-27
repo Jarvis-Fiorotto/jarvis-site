@@ -13,7 +13,6 @@ const SYNC_TABLE = process.env.SUPABASE_SYNC_RUNS_TABLE || 'jarvis_site_sync_run
 const documents = [
   ['roster-latest', process.env.ROSTER_JSON || path.join(ROOT, 'app/data/roster-latest.json')],
   ['travel', process.env.TRAVEL_JSON || path.join(ROOT, 'app/data/travel.json')],
-  ['flight-status-latest', process.env.FLIGHT_STATUS_JSON || path.join(ROOT, 'app/data/flight-status-latest.json')],
   ['flight-briefing-latest', process.env.FLIGHT_BRIEFING_JSON || path.join(ROOT, 'app/data/flight-briefing-latest.json')]
 ];
 

@@ -332,7 +332,14 @@ function fetchLidoBriefing(event) {
   const first = runLidoFetch(event);
   if (first.result.status === 0 && first.parsed) return first.parsed;
 
-  if (first.parsed?.status === 'auth_required') {
+  const canBenefitFromReauth = new Set([
+    'auth_required',
+    'auth_cookie_missing',
+    'lido_tab_not_found',
+    'cdp_unavailable'
+  ]);
+
+  if (canBenefitFromReauth.has(first.parsed?.status)) {
     const reauth = runLidoReauth();
     if (reauth.parsed?.status === 'ok') {
       const retry = runLidoFetch(event);
