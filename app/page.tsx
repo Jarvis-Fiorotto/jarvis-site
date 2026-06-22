@@ -374,12 +374,12 @@ function cleanFlightLabel(label: string) {
   return label.replace(/^DHD\s+/i, "").trim();
 }
 
-function flightStatusKey(event: RosterEvent) {
+function flightBriefingKey(event: RosterEvent) {
   return `${event.date}|${cleanFlightLabel(event.label)}|${event.from}|${event.to}|${event.start_time}`;
 }
 
 function flightBriefingFor(event: RosterEvent) {
-  return flightBriefingData.briefings?.[flightStatusKey(event)] || null;
+  return flightBriefingData.briefings?.[flightBriefingKey(event)] || null;
 }
 
 function flightRadarUrl(event: RosterEvent) {
