@@ -988,11 +988,6 @@ export default async function Home({ searchParams }: PageProps) {
             <div className="statusChip">Dados: {dataSourceLabel} · {runtimeUpdatedLabel(dataUpdatedAt)}</div>
             {pendingRosterChanges.length > 0 && <div className="statusChip warning">⚠️ {pendingRosterChanges.length} alteração(ões) pendente(s)</div>}
             <div className="periodChip">{monthLabel(monthStart)} · {shortDate.format(parseDate(monthStart))}–{shortDate.format(parseDate(monthEnd))}</div>
-            {canViewAdmin && (
-              <form action="/api/roster/refresh" method="post" className="inlineForm">
-                <button className="ghostButton" type="submit">Atualizar escala</button>
-              </form>
-            )}
           </div>
         </header>
 
