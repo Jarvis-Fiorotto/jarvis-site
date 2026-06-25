@@ -244,6 +244,11 @@ function hotelWeatherLocation(reservation: HotelReservation) {
   return HOTEL_WEATHER_LOCATIONS[reservation.airport] || null;
 }
 
+function mappedAirportLocation(code?: string | null): AirportLocation | null {
+  if (!code) return null;
+  return HOTEL_WEATHER_LOCATIONS[code.toUpperCase()] || null;
+}
+
 function csvLine(line: string) {
   const values: string[] = [];
   let current = "";
@@ -311,6 +316,12 @@ async function resolveAirportWeatherLocation(reservation: HotelReservation): Pro
   return airportLocationFromOurAirports(reservation.airport);
 }
 
+async function resolveAirportCodeWeatherLocation(code?: string | null): Promise<AirportLocation | null> {
+  if (!code) return null;
+  const normalized = code.trim().toUpperCase();
+  return mappedAirportLocation(normalized) || airportLocationFromOurAirports(normalized);
+}
+
 function weatherLabel(code?: number | null) {
   if (code === null || code === undefined) return { icon: "🌡️", label: "previsão disponível" };
   return WEATHER_CODE_LABELS[code] || { icon: "🌡️", label: "previsão disponível" };
@@ -320,14 +331,12 @@ function roundWeatherValue(value?: number | null) {
   return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : null;
 }
 
-async function fetchHotelWeather(reservation: HotelReservation, today: string): Promise<HotelWeather> {
-  const date = reservation.date_iso;
-  const location = await resolveAirportWeatherLocation(reservation);
+async function fetchWeatherForLocation(location: AirportLocation | null, date: string | null | undefined, today: string, fallbackLocation: string): Promise<HotelWeather> {
   if (!date || !location) {
     return {
       status: "unavailable",
       source: "Open-Meteo",
-      location: reservation.city || airportName(reservation.airport),
+      location: fallbackLocation,
       date: date || "—",
       reason: "localidade sem coordenadas disponíveis"
     };
@@ -424,24 +433,32 @@ async function fetchHotelWeather(reservation: HotelReservation, today: string): 
   }
 }
 
+async function fetchHotelWeather(reservation: HotelReservation, today: string): Promise<HotelWeather> {
+  return fetchWeatherForLocation(
+    await resolveAirportWeatherLocation(reservation),
+    reservation.date_iso,
+    today,
+    reservation.city || airportName(reservation.airport)
+  );
+}
+
+async function fetchReleaseWeather(event: RosterEvent, today: string): Promise<HotelWeather> {
+  const airport = event.to || event.from;
+  return fetchWeatherForLocation(
+    await resolveAirportCodeWeatherLocation(airport),
+    event.date,
+    today,
+    airportName(airport)
+  );
+}
+
 function releaseEvents(dayEvents: RosterEvent[]) {
   return dayEvents.filter((event) => event.type === "CHECK" && event.subtype === "OUT");
 }
 
-function reservationForRelease(event: RosterEvent, reservations: HotelReservation[]) {
-  const airport = event.to || event.from;
-  return reservations.find((reservation) => reservation.date_iso === event.date && reservation.airport === airport)
-    || reservations.find((reservation) => reservation.date_iso === event.date)
-    || null;
-}
-
-async function releaseWeatherByEventId(dayEvents: RosterEvent[], reservations: HotelReservation[], today: string) {
-  const entries = await Promise.all(releaseEvents(dayEvents).map(async (event) => {
-    const reservation = reservationForRelease(event, reservations);
-    if (!reservation) return null;
-    return [event.id, await fetchHotelWeather(reservation, today)] as const;
-  }));
-  return Object.fromEntries(entries.filter((entry): entry is readonly [string, HotelWeather] => entry !== null));
+async function releaseWeatherByEventId(dayEvents: RosterEvent[], today: string) {
+  const entries = await Promise.all(releaseEvents(dayEvents).map(async (event) => [event.id, await fetchReleaseWeather(event, today)] as const));
+  return Object.fromEntries(entries);
 }
 
 function HotelWeatherLine({ weather }: { weather?: HotelWeather }) {
@@ -1059,7 +1076,7 @@ export default async function Home({ searchParams }: PageProps) {
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
-  const focusReleaseWeather = await releaseWeatherByEventId(focusEvents, focusHotels.map((item) => item.reservation), todayKey);
+  const focusReleaseWeather = await releaseWeatherByEventId(focusEvents, todayKey);
   const upcoming = getUpcoming();
   const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
