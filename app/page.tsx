@@ -93,10 +93,20 @@ type HotelWeather = {
   icon?: string;
   tempMin?: number | null;
   tempMax?: number | null;
+  currentTemp?: number | null;
+  feelsLike?: number | null;
   precipitationProbability?: number | null;
   precipitationMm?: number | null;
   windKmh?: number | null;
+  daysAhead?: number;
+  isCurrent?: boolean;
   reason?: string;
+};
+
+type AirportLocation = {
+  name: string;
+  latitude: number;
+  longitude: number;
 };
 
 type WeatherReport = {
@@ -234,6 +244,73 @@ function hotelWeatherLocation(reservation: HotelReservation) {
   return HOTEL_WEATHER_LOCATIONS[reservation.airport] || null;
 }
 
+function csvLine(line: string) {
+  const values: string[] = [];
+  let current = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const next = line[i + 1];
+    if (char === '"' && quoted && next === '"') {
+      current += '"';
+      i++;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      values.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  values.push(current);
+  return values;
+}
+
+async function airportLocationFromOurAirports(code: string): Promise<AirportLocation | null> {
+  const normalized = code.trim().toUpperCase();
+  if (!normalized) return null;
+
+  try {
+    const response = await fetch("https://davidmegginson.github.io/ourairports-data/airports.csv", {
+      next: { revalidate: 60 * 60 * 24 * 7 }
+    });
+    if (!response.ok) return null;
+
+    const text = await response.text();
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    const headers = csvLine(lines[0]);
+    const index = Object.fromEntries(headers.map((header, idx) => [header, idx]));
+
+    for (const line of lines.slice(1)) {
+      const values = csvLine(line);
+      const ident = values[index.ident]?.toUpperCase();
+      const iata = values[index.iata_code]?.toUpperCase();
+      if (ident !== normalized && iata !== normalized) continue;
+
+      const latitude = Number(values[index.latitude_deg]);
+      const longitude = Number(values[index.longitude_deg]);
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+
+      return {
+        name: values[index.municipality] || values[index.name] || normalized,
+        latitude,
+        longitude
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+async function resolveAirportWeatherLocation(reservation: HotelReservation): Promise<AirportLocation | null> {
+  const mapped = hotelWeatherLocation(reservation);
+  if (mapped) return mapped;
+  return airportLocationFromOurAirports(reservation.airport);
+}
+
 function weatherLabel(code?: number | null) {
   if (code === null || code === undefined) return { icon: "🌡️", label: "previsão disponível" };
   return WEATHER_CODE_LABELS[code] || { icon: "🌡️", label: "previsão disponível" };
@@ -243,25 +320,21 @@ function roundWeatherValue(value?: number | null) {
   return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : null;
 }
 
-async function fetchHotelWeather(reservation: HotelReservation): Promise<HotelWeather> {
+async function fetchHotelWeather(reservation: HotelReservation, today: string): Promise<HotelWeather> {
   const date = reservation.date_iso;
-  const location = hotelWeatherLocation(reservation);
+  const location = await resolveAirportWeatherLocation(reservation);
   if (!date || !location) {
     return {
       status: "unavailable",
       source: "Open-Meteo",
       location: reservation.city || airportName(reservation.airport),
       date: date || "—",
-      reason: "localidade sem coordenadas mapeadas"
+      reason: "localidade sem coordenadas disponíveis"
     };
   }
 
-  const today = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Sao_Paulo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
+  const maxDate = addDays(today, 7);
+  const daysAhead = Math.round((parseDate(date).getTime() - parseDate(today).getTime()) / 86400000);
 
   if (date < today) {
     return {
@@ -269,7 +342,19 @@ async function fetchHotelWeather(reservation: HotelReservation): Promise<HotelWe
       source: "Open-Meteo",
       location: location.name,
       date,
+      daysAhead,
       reason: "previsão histórica não exibida"
+    };
+  }
+
+  if (date > maxDate) {
+    return {
+      status: "out_of_range",
+      source: "Open-Meteo",
+      location: location.name,
+      date,
+      daysAhead,
+      reason: "fora da janela de 7 dias"
     };
   }
 
@@ -280,11 +365,19 @@ async function fetchHotelWeather(reservation: HotelReservation): Promise<HotelWe
     endpoint.searchParams.set("timezone", "America/Sao_Paulo");
     endpoint.searchParams.set("start_date", date);
     endpoint.searchParams.set("end_date", date);
+    endpoint.searchParams.set("current", "temperature_2m,apparent_temperature,weather_code,precipitation,wind_speed_10m");
     endpoint.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max");
 
-    const response = await fetch(endpoint, { next: { revalidate: 60 * 60 * 6 } });
+    const response = await fetch(endpoint, { next: { revalidate: 60 * 60 * 3 } });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json() as {
+      current?: {
+        temperature_2m?: number;
+        apparent_temperature?: number;
+        weather_code?: number;
+        precipitation?: number;
+        wind_speed_10m?: number;
+      };
       daily?: {
         time?: string[];
         weather_code?: number[];
@@ -297,22 +390,27 @@ async function fetchHotelWeather(reservation: HotelReservation): Promise<HotelWe
     };
     const index = payload.daily?.time?.indexOf(date) ?? -1;
     if (index < 0) {
-      return { status: "out_of_range", source: "Open-Meteo", location: location.name, date, reason: "fora da janela de previsão" };
+      return { status: "out_of_range", source: "Open-Meteo", location: location.name, date, daysAhead, reason: "fora da janela de previsão" };
     }
-    const code = payload.daily?.weather_code?.[index] ?? null;
+    const isCurrent = date === today;
+    const code = isCurrent ? payload.current?.weather_code ?? payload.daily?.weather_code?.[index] ?? null : payload.daily?.weather_code?.[index] ?? null;
     const label = weatherLabel(code);
     return {
       status: "ok",
       source: "Open-Meteo",
       location: location.name,
       date,
+      daysAhead,
+      isCurrent,
       icon: label.icon,
       summary: label.label,
+      currentTemp: isCurrent ? roundWeatherValue(payload.current?.temperature_2m) : null,
+      feelsLike: isCurrent ? roundWeatherValue(payload.current?.apparent_temperature) : null,
       tempMax: roundWeatherValue(payload.daily?.temperature_2m_max?.[index]),
       tempMin: roundWeatherValue(payload.daily?.temperature_2m_min?.[index]),
       precipitationProbability: roundWeatherValue(payload.daily?.precipitation_probability_max?.[index]),
-      precipitationMm: payload.daily?.precipitation_sum?.[index] ?? null,
-      windKmh: roundWeatherValue(payload.daily?.wind_speed_10m_max?.[index])
+      precipitationMm: isCurrent && typeof payload.current?.precipitation === "number" ? payload.current.precipitation : payload.daily?.precipitation_sum?.[index] ?? null,
+      windKmh: roundWeatherValue(isCurrent ? payload.current?.wind_speed_10m : payload.daily?.wind_speed_10m_max?.[index])
     };
   } catch (error) {
     return {
@@ -320,32 +418,40 @@ async function fetchHotelWeather(reservation: HotelReservation): Promise<HotelWe
       source: "Open-Meteo",
       location: location.name,
       date,
+      daysAhead,
       reason: error instanceof Error ? error.message : "provider indisponível"
     };
   }
 }
 
-async function hotelWeatherByKey(reservations: HotelReservation[]) {
-  const unique = new Map<string, HotelReservation>();
-  for (const reservation of reservations) {
-    const date = reservation.date_iso;
-    if (!date) continue;
-    const key = `${reservation.airport}-${date}`;
-    if (!unique.has(key)) unique.set(key, reservation);
-  }
-  const entries = await Promise.all([...unique.entries()].map(async ([key, reservation]) => [key, await fetchHotelWeather(reservation)] as const));
-  return Object.fromEntries(entries) as Record<string, HotelWeather>;
+function releaseEvents(dayEvents: RosterEvent[]) {
+  return dayEvents.filter((event) => event.type === "CHECK" && event.subtype === "OUT");
 }
 
-function hotelWeatherKey(reservation: HotelReservation) {
-  return `${reservation.airport}-${reservation.date_iso || ""}`;
+function reservationForRelease(event: RosterEvent, reservations: HotelReservation[]) {
+  const airport = event.to || event.from;
+  return reservations.find((reservation) => reservation.date_iso === event.date && reservation.airport === airport)
+    || reservations.find((reservation) => reservation.date_iso === event.date)
+    || null;
+}
+
+async function releaseWeatherByEventId(dayEvents: RosterEvent[], reservations: HotelReservation[], today: string) {
+  const entries = await Promise.all(releaseEvents(dayEvents).map(async (event) => {
+    const reservation = reservationForRelease(event, reservations);
+    if (!reservation) return null;
+    return [event.id, await fetchHotelWeather(reservation, today)] as const;
+  }));
+  return Object.fromEntries(entries.filter((entry): entry is readonly [string, HotelWeather] => entry !== null));
 }
 
 function HotelWeatherLine({ weather }: { weather?: HotelWeather }) {
   if (!weather) return null;
+  const dayLabel = weather.isCurrent ? "hoje" : weather.daysAhead === 1 ? "amanhã" : weather.daysAhead ? `em ${weather.daysAhead} dias` : "na data";
   if (weather.status !== "ok") {
-    return <small className="hotelWeather muted">🌡️ Meteo {weather.location}: {weather.reason || "indisponível"}</small>;
+    return <small className="hotelWeather muted">🌡️ Meteo {weather.location} {dayLabel}: {weather.reason || "indisponível"}</small>;
   }
+  const now = weather.currentTemp !== null && weather.currentTemp !== undefined ? ` · agora ${weather.currentTemp}°C` : "";
+  const feels = weather.feelsLike !== null && weather.feelsLike !== undefined ? `, sensação ${weather.feelsLike}°C` : "";
   const rain = weather.precipitationProbability !== null && weather.precipitationProbability !== undefined
     ? ` · chuva ${weather.precipitationProbability}%`
     : "";
@@ -358,8 +464,18 @@ function HotelWeatherLine({ weather }: { weather?: HotelWeather }) {
     : "";
   return (
     <small className="hotelWeather">
-      <b>{weather.icon} Meteo {weather.location}</b>: {weather.summary}{temp}{rain}{precipitation}{wind}
+      <b>{weather.icon} Meteo {weather.location} {dayLabel}</b>: {weather.summary}{now}{feels}{temp}{rain}{precipitation}{wind}
     </small>
+  );
+}
+
+function ReleaseWeatherCard({ weather }: { weather?: HotelWeather }) {
+  if (!weather) return null;
+  return (
+    <div className="releaseWeatherCard">
+      <span>Depois do release</span>
+      <HotelWeatherLine weather={weather} />
+    </div>
   );
 }
 
@@ -922,7 +1038,6 @@ export default async function Home({ searchParams }: PageProps) {
   const canViewAdmin = isAdmin(user);
 
   await hydrateRuntimeData();
-  const hotelWeather = await hotelWeatherByKey(hotelReservations);
 
   const grouped = groupByDay(events);
   const todayKey = new Intl.DateTimeFormat("en-CA", {
@@ -944,6 +1059,7 @@ export default async function Home({ searchParams }: PageProps) {
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
+  const focusReleaseWeather = await releaseWeatherByEventId(focusEvents, focusHotels.map((item) => item.reservation), todayKey);
   const upcoming = getUpcoming();
   const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
@@ -1034,7 +1150,6 @@ export default async function Home({ searchParams }: PageProps) {
                   <div className="dayHotelItem" key={`${reservation.airport}-${reservation.date}-${reservation.hotel?.name}`}>
                     <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
                     <span>{reservation.hotel?.address || reservation.city}</span>
-                    <HotelWeatherLine weather={hotelWeather[hotelWeatherKey(reservation)]} />
                     {overnightText(reservation) && (
                       <small className="overnightWindow">
                         {overnightText(reservation)}
@@ -1052,14 +1167,17 @@ export default async function Home({ searchParams }: PageProps) {
 
             <div className="compactEvents">
               {displayEvents(focusEvents).map((event) => (
-                <div className={`compactEvent ${eventKind(event)}`} key={event.id}>
-                  <time>{event.start_time}</time>
-                  <div>
-                    <strong>{event.label}</strong>
-                    <span>{kindLabel(event)} · {shortAirport(event)}</span>
-                    <FlightExternalLinks event={event} />
+                <div key={event.id}>
+                  <div className={`compactEvent ${eventKind(event)}`}>
+                    <time>{event.start_time}</time>
+                    <div>
+                      <strong>{event.label}</strong>
+                      <span>{kindLabel(event)} · {shortAirport(event)}</span>
+                      <FlightExternalLinks event={event} />
+                    </div>
+                    <small>{kindLabel(event)}</small>
                   </div>
-                  <small>{kindLabel(event)}</small>
+                  <ReleaseWeatherCard weather={focusReleaseWeather[event.id]} />
                 </div>
               ))}
             </div>
@@ -1155,7 +1273,6 @@ export default async function Home({ searchParams }: PageProps) {
                       {dayHotels.map(({ reservation, transports }) => (
                         <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
                           <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
-                          <HotelWeatherLine weather={hotelWeather[hotelWeatherKey(reservation)]} />
                           {overnightText(reservation) && (
                             <span className="overnightWindow">
                               {overnightText(reservation)}
@@ -1218,7 +1335,6 @@ export default async function Home({ searchParams }: PageProps) {
                           {dayHotels.map(({ reservation, transports }) => (
                             <div className="embeddedHotel" key={`${day}-${reservation.airport}-${reservation.hotel?.name}`}>
                               <strong>{airportLabel(reservation.airport)} · {reservation.hotel?.name || "Hotel"}</strong>
-                              <HotelWeatherLine weather={hotelWeather[hotelWeatherKey(reservation)]} />
                               {transports.map((transport) => (
                                 <span key={`${transport.direction}-${transport.pickup_time}`}>
                                   {transportLabel(transport.direction)}: {transport.pickup_time} · {transport.company}

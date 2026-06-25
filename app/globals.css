@@ -379,6 +379,28 @@ button { cursor: pointer; }
 .compactEvent div { display: grid; gap: 2px; min-width: 0; }
 .compactEvent span, .compactEvent small { color: var(--muted); }
 .compactEvent small { white-space: nowrap; }
+.releaseWeatherCard {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 2px 70px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(62, 231, 255, .20);
+  background: linear-gradient(135deg, rgba(62, 231, 255, .10), rgba(79, 140, 255, .06));
+}
+.releaseWeatherCard > span {
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.releaseWeatherCard .hotelWeather {
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
 .miniStat { min-height: 132px; display: grid; align-content: center; gap: 5px; }
 .miniStat span, .miniStat small { color: var(--muted); }
 .miniStat strong { font-size: 30px; letter-spacing: -.04em; }
@@ -455,6 +477,7 @@ button { cursor: pointer; }
   .briefingAirports { grid-template-columns: 1fr; }
   .compactEvent { grid-template-columns: 54px 1fr; }
   .compactEvent small { grid-column: 2; }
+  .releaseWeatherCard { margin-left: 0; }
 }
 .dayHotelBlock {
   display: grid;
