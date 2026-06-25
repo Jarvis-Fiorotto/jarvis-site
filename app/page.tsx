@@ -461,6 +461,10 @@ async function releaseWeatherByEventId(dayEvents: RosterEvent[], today: string) 
   return Object.fromEntries(entries);
 }
 
+function releaseWeatherEventsForRange(groupedEvents: Record<string, RosterEvent[]>, start: string, end: string) {
+  return eachDate(start, end).flatMap((day) => groupedEvents[day] || []);
+}
+
 function HotelWeatherLine({ weather }: { weather?: HotelWeather }) {
   if (!weather) return null;
   const dayLabel = weather.isCurrent ? "hoje" : weather.daysAhead === 1 ? "amanhã" : weather.daysAhead ? `em ${weather.daysAhead} dias` : "na data";
@@ -855,6 +859,15 @@ function displayEvents(dayEvents: RosterEvent[]) {
   return dayEvents.filter((event) => event.type !== "HOTEL");
 }
 
+function previewEvents(dayEvents: RosterEvent[]) {
+  const visible = displayEvents(dayEvents);
+  const preview = visible.slice(0, 5);
+  for (const release of releaseEvents(visible)) {
+    if (!preview.some((event) => event.id === release.id)) preview.push(release);
+  }
+  return preview.sort((a, b) => new Date(a.start_local).getTime() - new Date(b.start_local).getTime());
+}
+
 function hotelsForDay(day: string) {
   return hotelReservations
     .map((reservation) => ({
@@ -1076,7 +1089,8 @@ export default async function Home({ searchParams }: PageProps) {
   const focusSummary = focusEvents.length ? daySummary(focusEvents) : null;
   const focusWindow = focusEvents.length ? operationalWindow(focusEvents, focusDay) : { start: "—", end: "—", source: "oculto" };
   const focusHotels = hotelsForDay(focusDay);
-  const focusReleaseWeather = await releaseWeatherByEventId(focusEvents, todayKey);
+  const weatherEndDay = addDays(todayKey, 7);
+  const releaseWeather = await releaseWeatherByEventId(releaseWeatherEventsForRange(grouped, todayKey, weatherEndDay), todayKey);
   const upcoming = getUpcoming();
   const briefingFlight = latestBriefedFlight() || focusEvents.find((event) => event.type === "FLY") || null;
 
@@ -1194,7 +1208,7 @@ export default async function Home({ searchParams }: PageProps) {
                     </div>
                     <small>{kindLabel(event)}</small>
                   </div>
-                  <ReleaseWeatherCard weather={focusReleaseWeather[event.id]} />
+                  <ReleaseWeatherCard weather={releaseWeather[event.id]} />
                 </div>
               ))}
             </div>
@@ -1268,19 +1282,22 @@ export default async function Home({ searchParams }: PageProps) {
                   <PendingChangesPanel changes={pendingChangesForDay(day)} compact />
                   {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
                   {!isHiddenDay && <div className="eventList reduced">
-                    {displayEvents(dayEvents).slice(0, 5).map((event) => (
-                      <div className={`eventRow ${eventKind(event)}`} key={event.id}>
-                        <div className="timeBlock">
-                          <strong>{event.start_time}</strong>
-                          <span>{event.end_time}</span>
-                        </div>
-                        <div className="eventMain">
-                          <div>
-                            <strong>{event.label}</strong>
-                            <span>{kindLabel(event)} · {shortAirport(event)}</span>
+                    {previewEvents(dayEvents).map((event) => (
+                      <div key={event.id}>
+                        <div className={`eventRow ${eventKind(event)}`}>
+                          <div className="timeBlock">
+                            <strong>{event.start_time}</strong>
+                            <span>{event.end_time}</span>
                           </div>
-                          <FlightExternalLinks event={event} />
+                          <div className="eventMain">
+                            <div>
+                              <strong>{event.label}</strong>
+                              <span>{kindLabel(event)} · {shortAirport(event)}</span>
+                            </div>
+                            <FlightExternalLinks event={event} />
+                          </div>
                         </div>
+                        <ReleaseWeatherCard weather={releaseWeather[event.id]} />
                       </div>
                     ))}
                     {displayEvents(dayEvents).length > 5 && <div className="moreEvents">+ {displayEvents(dayEvents).length - 5} eventos no dia</div>}
@@ -1330,7 +1347,7 @@ export default async function Home({ searchParams }: PageProps) {
                       <PendingChangesPanel changes={pendingChangesForDay(day)} compact />
                       {isHiddenDay && <div className="hiddenDayNote">Nenhum voo, folga ou atividade publicada para este dia.</div>}
                       {!isHiddenDay && <div className="eventList reduced">
-                        {displayEvents(dayEvents).slice(0, 5).map((event) => (
+                        {previewEvents(dayEvents).map((event) => (
                           <div className={`eventRow ${eventKind(event)}`} key={event.id}>
                             <div className="timeBlock">
                               <strong>{event.start_time}</strong>
