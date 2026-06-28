@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-28T18:08:33.803Z",
+  "updated_at": "2026-06-28T19:55:14.652Z",
   "provider": "aviationweather.gov",
   "status": "partial_until_lido_enabled",
   "limits": {
@@ -11,9 +11,11 @@
     "liveWeatherMaxAgeMinutes": 90
   },
   "last_run": {
-    "queries": 0,
-    "candidates": 0,
-    "logs": []
+    "queries": 4,
+    "candidates": 1,
+    "logs": [
+      "updated 2026-06-28|AD6084|CGH|REC|16:45"
+    ]
   },
   "briefings": {
     "2026-05-10|AD4546|VCP|CWB|19:15": {
@@ -22972,6 +22974,382 @@
       "analysis": {
         "risk": "atenção",
         "summary": "Origem IGU/SBFI: METAR VFR (idade incompatível/possivelmente defasado); TAF disponível (idade 104 min, acima da política); atenção para atividade convectiva/CB/TS, precipitação, restrição de visibilidade, teto baixo. Destino CGH/SBSP: METAR VFR (idade incompatível/possivelmente defasado); TAF disponível (idade 464 min, acima da política); atenção para teto baixo. Alternados: aguardando extração do Lido para incluir aeroportos planejados no despacho. Análise JARVIS: há sinais que merecem briefing mais cuidadoso (atividade convectiva/CB/TS, precipitação, restrição de visibilidade, teto baixo). METAR/TAF vêm do fallback vivo mais recente disponível; conferir Lido/OFP, NOTAMs oficiais, mínimos, combustível e tendência antes da apresentação."
+      }
+    },
+    "2026-06-28|AD6084|CGH|REC|16:45": {
+      "key": "2026-06-28|AD6084|CGH|REC|16:45",
+      "updated_at": "2026-06-28T19:55:14.652Z",
+      "source": "live_fallback + roster; lido_pending",
+      "status": "partial_with_live_fallback_without_lido",
+      "freshness_policy": {
+        "rule": "Lido é fonte oficial para OFP/alternados/pacote corporativo, mas pode ter sido emitido horas antes. METAR/TAF são sempre reconsultados no fallback vivo na execução; cartas/NOTAM devem usar fallback vivo quando provider estiver disponível.",
+        "metar_taf_primary": "aviationweather.gov live fetch",
+        "lido_weather_role": "supplemental_official_package_not_freshness_authority",
+        "notam_charts_live_provider": "pending_decea_aisweb_access",
+        "max_live_weather_age_minutes": 90
+      },
+      "data_currency": {
+        "metar_taf": "live_fallback_checked_each_run",
+        "ofp_alternates": "lido_unavailable",
+        "notam": "lido_unavailable_live_fallback_pending",
+        "charts": "live_fallback_pending_decea_aisweb"
+      },
+      "flight": {
+        "date": "2026-06-28",
+        "label": "AD6084",
+        "flight_number": "AD6084",
+        "from": "CGH",
+        "to": "REC",
+        "departure_local": "2026-06-28T16:45-03:00",
+        "arrival_local": "2026-06-28T20:00-03:00",
+        "start_time": "16:45",
+        "end_time": "20:00",
+        "aircraft": null,
+        "equipment": "295",
+        "position": "CA"
+      },
+      "airports": {
+        "origin": {
+          "iata": "CGH",
+          "icao": "SBSP",
+          "metar": {
+            "status": "ok",
+            "source": "aviationweather.gov",
+            "fetched_at": "2026-06-28T19:55:14.932Z",
+            "issued_at": "1970-01-21T15:11:13.200Z",
+            "age_minutes": 29681564,
+            "freshness_status": "stale_or_clock_mismatch",
+            "raw": "METAR SBSP 281900Z 36009KT 9999 FEW035 26/14 Q1020",
+            "decoded": {
+              "icaoId": "SBSP",
+              "receiptTime": "2026-06-28T18:53:26.671Z",
+              "obsTime": 1782673200,
+              "reportTime": "2026-06-28T19:00:00.000Z",
+              "temp": 26,
+              "dewp": 14,
+              "wdir": 360,
+              "wspd": 9,
+              "visib": "6+",
+              "altim": 1020,
+              "qcField": 0,
+              "metarType": "METAR",
+              "rawOb": "METAR SBSP 281900Z 36009KT 9999 FEW035 26/14 Q1020",
+              "lat": -23.627,
+              "lon": -46.655,
+              "elev": 802,
+              "name": "Sao Paulo/Congonhas, SP, BR",
+              "cover": "FEW",
+              "clouds": [
+                {
+                  "cover": "FEW",
+                  "base": 3500
+                }
+              ],
+              "fltCat": "VFR"
+            }
+          },
+          "taf": {
+            "status": "ok",
+            "source": "aviationweather.gov",
+            "fetched_at": "2026-06-28T19:55:14.883Z",
+            "issued_at": "2026-06-28T16:46:00.000Z",
+            "age_minutes": 189,
+            "freshness_status": "older_than_policy",
+            "raw": "TAF SBSP 281646Z 2818/2906 36005KT CAVOK TX25/2818Z TN17/2905Z BECMG 2821/2823 08005KT RMK PGG",
+            "decoded": {
+              "icaoId": "SBSP",
+              "dbPopTime": "2026-06-28T16:49:36.794Z",
+              "bulletinTime": "2026-06-28T18:00:00.000Z",
+              "issueTime": "2026-06-28T16:46:00.000Z",
+              "validTimeFrom": 1782669600,
+              "validTimeTo": 1782712800,
+              "rawTAF": "TAF SBSP 281646Z 2818/2906 36005KT CAVOK TX25/2818Z TN17/2905Z BECMG 2821/2823 08005KT RMK PGG",
+              "mostRecent": 1,
+              "remarks": " RMK PGG",
+              "lat": -23.627,
+              "lon": -46.655,
+              "elev": 802,
+              "prior": 6,
+              "name": "Sao Paulo/Congonhas",
+              "fcsts": [
+                {
+                  "timeFrom": 1782669600,
+                  "timeTo": 1782680400,
+                  "timeBec": null,
+                  "fcstChange": null,
+                  "probability": null,
+                  "wdir": 360,
+                  "wspd": 5,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": "6+",
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "NSC",
+                      "base": null,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                },
+                {
+                  "timeFrom": 1782680400,
+                  "timeTo": 1782712800,
+                  "timeBec": 1782687600,
+                  "fcstChange": "BECMG",
+                  "probability": null,
+                  "wdir": 80,
+                  "wspd": 5,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": "6+",
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "NSC",
+                      "base": null,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                }
+              ]
+            }
+          },
+          "notams": {
+            "status": "pending_lido",
+            "items": []
+          }
+        },
+        "destination": {
+          "iata": "REC",
+          "icao": "SBRF",
+          "metar": {
+            "status": "ok",
+            "source": "aviationweather.gov",
+            "fetched_at": "2026-06-28T19:55:15.308Z",
+            "issued_at": "1970-01-21T15:11:13.200Z",
+            "age_minutes": 29681564,
+            "freshness_status": "stale_or_clock_mismatch",
+            "raw": "METAR SBRF 281900Z 15012KT 9999 SCT025 27/21 Q1014",
+            "decoded": {
+              "icaoId": "SBRF",
+              "receiptTime": "2026-06-28T18:56:31.600Z",
+              "obsTime": 1782673200,
+              "reportTime": "2026-06-28T19:00:00.000Z",
+              "temp": 27,
+              "dewp": 21,
+              "wdir": 150,
+              "wspd": 12,
+              "visib": "6+",
+              "altim": 1014,
+              "qcField": 0,
+              "metarType": "METAR",
+              "rawOb": "METAR SBRF 281900Z 15012KT 9999 SCT025 27/21 Q1014",
+              "lat": -8.126,
+              "lon": -34.923,
+              "elev": 10,
+              "name": "Recife Arpt, PE, BR",
+              "cover": "SCT",
+              "clouds": [
+                {
+                  "cover": "SCT",
+                  "base": 2500
+                }
+              ],
+              "fltCat": "VFR"
+            }
+          },
+          "taf": {
+            "status": "ok",
+            "source": "aviationweather.gov",
+            "fetched_at": "2026-06-28T19:55:15.002Z",
+            "issued_at": "2026-06-28T15:10:00.000Z",
+            "age_minutes": 285,
+            "freshness_status": "older_than_policy",
+            "raw": "TAF SBRF 281510Z 2818/2918 14012KT 8000 SCT022 TX28/2818Z TN23/2908Z BECMG 2822/2824 18010KT 9999 BECMG 2903/2905 15007KT 6000 SCT017 BECMG 2909/2911 15014KT 9999 FEW020 BECMG 2914/2916 SCT025 RMK PGB",
+            "decoded": {
+              "icaoId": "SBRF",
+              "dbPopTime": "2026-06-28T15:10:31.492Z",
+              "bulletinTime": "2026-06-28T15:10:00.000Z",
+              "issueTime": "2026-06-28T15:10:00.000Z",
+              "validTimeFrom": 1782669600,
+              "validTimeTo": 1782756000,
+              "rawTAF": "TAF SBRF 281510Z 2818/2918 14012KT 8000 SCT022 TX28/2818Z TN23/2908Z BECMG 2822/2824 18010KT 9999 BECMG 2903/2905 15007KT 6000 SCT017 BECMG 2909/2911 15014KT 9999 FEW020 BECMG 2914/2916 SCT025 RMK PGB",
+              "mostRecent": 1,
+              "remarks": " RMK PGB",
+              "lat": -8.126,
+              "lon": -34.923,
+              "elev": 10,
+              "prior": 2,
+              "name": "Recife Arpt",
+              "fcsts": [
+                {
+                  "timeFrom": 1782669600,
+                  "timeTo": 1782684000,
+                  "timeBec": null,
+                  "fcstChange": null,
+                  "probability": null,
+                  "wdir": 140,
+                  "wspd": 12,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": 4.97,
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "SCT",
+                      "base": 2200,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                },
+                {
+                  "timeFrom": 1782684000,
+                  "timeTo": 1782702000,
+                  "timeBec": 1782691200,
+                  "fcstChange": "BECMG",
+                  "probability": null,
+                  "wdir": 180,
+                  "wspd": 10,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": "6+",
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "SCT",
+                      "base": 2200,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                },
+                {
+                  "timeFrom": 1782702000,
+                  "timeTo": 1782723600,
+                  "timeBec": 1782709200,
+                  "fcstChange": "BECMG",
+                  "probability": null,
+                  "wdir": 150,
+                  "wspd": 7,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": 3.73,
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "SCT",
+                      "base": 1700,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                },
+                {
+                  "timeFrom": 1782723600,
+                  "timeTo": 1782741600,
+                  "timeBec": 1782730800,
+                  "fcstChange": "BECMG",
+                  "probability": null,
+                  "wdir": 150,
+                  "wspd": 14,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": "6+",
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "FEW",
+                      "base": 2000,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                },
+                {
+                  "timeFrom": 1782741600,
+                  "timeTo": 1782756000,
+                  "timeBec": 1782748800,
+                  "fcstChange": "BECMG",
+                  "probability": null,
+                  "wdir": 150,
+                  "wspd": 14,
+                  "wgst": null,
+                  "wshearHgt": null,
+                  "wshearDir": null,
+                  "wshearSpd": null,
+                  "visib": "6+",
+                  "altim": null,
+                  "vertVis": null,
+                  "wxString": null,
+                  "notDecoded": null,
+                  "clouds": [
+                    {
+                      "cover": "SCT",
+                      "base": 2500,
+                      "type": null
+                    }
+                  ],
+                  "icgTurb": [],
+                  "temp": []
+                }
+              ]
+            }
+          },
+          "notams": {
+            "status": "pending_lido",
+            "items": []
+          }
+        },
+        "alternates": []
+      },
+      "lido": {
+        "status": "disabled",
+        "url": "https://azu.lido.aero",
+        "notes": "Lido desativado neste ambiente; habilitar com LIDO_BRIEFING_ENABLED=1 em execução local segura."
+      },
+      "analysis": {
+        "risk": "atenção",
+        "summary": "Origem CGH/SBSP: METAR VFR (idade incompatível/possivelmente defasado); TAF disponível (idade 189 min, acima da política). Destino REC/SBRF: METAR VFR (idade incompatível/possivelmente defasado); TAF disponível (idade 285 min, acima da política); atenção para restrição de visibilidade. Alternados: aguardando extração do Lido para incluir aeroportos planejados no despacho. Análise JARVIS: há sinais que merecem briefing mais cuidadoso (restrição de visibilidade). METAR/TAF vêm do fallback vivo mais recente disponível; conferir Lido/OFP, NOTAMs oficiais, mínimos, combustível e tendência antes da apresentação."
       }
     }
   }
